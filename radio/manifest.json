@@ -1,0 +1,17 @@
+{
+  "name": "XiLauncher | Radio",
+  "short_name": "Radio",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c4a6e",
+  "theme_color": "#0284c7",
+  "description": "Radio española en directo.",
+  "icons": [
+    {
+      "src": "../logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

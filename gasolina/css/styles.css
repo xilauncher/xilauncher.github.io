@@ -113,7 +113,7 @@ body {
   padding: 10px 16px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 1010;
   flex-shrink: 0;
@@ -1333,4 +1333,56 @@ body {
   .bottom-sheet-footer {
     padding: 14px 20px 24px !important;
   }
+}
+
+.leaflet-user-marker {
+  background: transparent;
+  border: none;
+}
+
+.user-location-dot {
+  width: 16px;
+  height: 16px;
+  background-color: #38bdf8;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.user-location-dot::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 50%;
+  border: 2px solid #38bdf8;
+  animation: gps-pulse 1.5s infinite ease-out;
+}
+
+@keyframes gps-pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.back-btn {
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1015;
 }

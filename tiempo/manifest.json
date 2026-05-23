@@ -1,0 +1,17 @@
+{
+  "name": "XiLauncher | Tiempo",
+  "short_name": "Tiempo",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c4a6e",
+  "theme_color": "#0284c7",
+  "description": "El clima y calidad del aire en tiempo real.",
+  "icons": [
+    {
+      "src": "../logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

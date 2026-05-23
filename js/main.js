@@ -1,6 +1,9 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+﻿let clockInterval;
+
+document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   initClock();
+  initNameModal();
 });
 
 function initTheme() {
@@ -23,28 +26,108 @@ function initTheme() {
   });
 }
 
-function initClock() {
+function updateGreetingAndClock() {
   const clockElement = document.getElementById("clockText");
   const greetingElement = document.getElementById("greetingText");
 
-  function updateTime() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes().toString().padStart(2, "0");
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, "0");
 
-    clockElement.textContent = `${hours}:${minutes}`;
+  clockElement.textContent = `${hours}:${minutes}`;
 
-    let greeting = "Hola";
-    if (hours >= 6 && hours < 12) {
-      greeting = "Buenos días";
-    } else if (hours >= 12 && hours < 20) {
-      greeting = "Buenas tardes";
-    } else {
-      greeting = "Buenas noches";
-    }
-    greetingElement.textContent = `${greeting}, XiUser`;
+  let greeting = "Hola";
+  if (hours >= 6 && hours < 12) {
+    greeting = "Buenos días";
+  } else if (hours >= 12 && hours < 20) {
+    greeting = "Buenas tardes";
+  } else {
+    greeting = "Buenas noches";
   }
 
-  updateTime();
-  setInterval(updateTime, 1000 * 60);
+  const userName = localStorage.getItem("xilauncher_username") || "Usuario";
+  greetingElement.textContent = `${greeting}, ${userName}`;
+}
+
+function initClock() {
+  updateGreetingAndClock();
+  clockInterval = setInterval(updateGreetingAndClock, 1000 * 60);
+}
+
+function initNameModal() {
+  const editBtn = document.getElementById("editNameBtn");
+  const modal = document.getElementById("nameModal");
+  const cancelBtn = document.getElementById("cancelNameBtn");
+  const saveBtn = document.getElementById("saveNameBtn");
+  const nameInput = document.getElementById("nameInput");
+
+  editBtn.addEventListener("click", () => {
+    const currentName = localStorage.getItem("xilauncher_username");
+    nameInput.value =
+      currentName && currentName !== "Usuario" ? currentName : "";
+    modal.classList.remove("hidden");
+    setTimeout(() => nameInput.focus(), 100);
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+
+  saveBtn.addEventListener("click", saveName);
+  nameInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") saveName();
+  });
+
+  function saveName() {
+    const newName = nameInput.value.trim() || "Usuario";
+    localStorage.setItem("xilauncher_username", newName);
+    modal.classList.add("hidden");
+    updateGreetingAndClock();
+  }
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./sw.js")
+      .then((reg) => console.log("XiLauncher SW registrado:", reg.scope))
+      .catch((err) => console.error("Error registrando SW del Hub:", err));
+  });
+}
+
+let deferredPrompt;
+const installBanner = document.getElementById("installBanner");
+const installBtn = document.getElementById("installBtn");
+const closeInstallBtn = document.getElementById("closeInstallBtn");
+
+if (installBanner && installBtn && closeInstallBtn) {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    if (localStorage.getItem("xilauncher_hide_install") !== "true") {
+      installBanner.classList.remove("hidden");
+    }
+  });
+
+  installBtn.addEventListener("click", async () => {
+    installBanner.classList.add("hidden");
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`Resultado de la instalación: ${outcome}`);
+      deferredPrompt = null;
+    }
+  });
+
+  closeInstallBtn.addEventListener("click", () => {
+    installBanner.classList.add("hidden");
+    localStorage.setItem("xilauncher_hide_install", "true");
+  });
+
+  window.addEventListener("appinstalled", () => {
+    installBanner.classList.add("hidden");
+    deferredPrompt = null;
+    console.log("App instalada con éxito");
+  });
 }

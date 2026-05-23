@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>XiLauncher | Radio</title>
+
+    <link href="../css/remixicon.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="apple-touch-icon" href="../logo.png" />
+    <link rel="manifest" href="manifest.json" />
+
+    <meta name="theme-color" content="#0284c7" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body
+    class="bg-slate-50 dark:bg-slate-900 h-full flex flex-col transition-colors duration-200 overflow-hidden"
+  >
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <i class="ri-radio-2-line spinner-icon"></i>
+      </div>
+      <h2 class="loading-title">Sintonizando...</h2>
+      <p class="loading-subtitle">Conectando con Radio Browser API.</p>
+    </div>
+
+    <header class="app-header">
+      <a href="../index.html" class="back-btn"
+        ><i class="ri-arrow-left-s-line"></i
+      ></a>
+      <div class="brand-title">
+        <i class="ri-radio-2-fill" style="margin-right: 4px"></i> Radio
+        <span class="pwa-badge">Xi</span>
+      </div>
+      <div class="header-actions">
+        <button
+          onclick="toggleDarkMode()"
+          class="header-btn"
+          title="Cambiar Tema"
+        >
+          <i id="themeIcon" class="ri-moon-fill"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="quick-search-bar">
+      <div class="search-input-wrapper">
+        <i class="ri-search-line"></i>
+        <input
+          type="text"
+          id="searchQuery"
+          placeholder="Buscar emisora o género..."
+          class="search-field"
+          autocomplete="off"
+        />
+      </div>
+    </div>
+
+    <main class="main-container">
+      <div class="tabs-header">
+        <button
+          class="tab-btn active"
+          id="tab-explore"
+          onclick="switchView('explore')"
+        >
+          Explorar
+        </button>
+        <button class="tab-btn" id="tab-favs" onclick="switchView('favs')">
+          Favoritas
+        </button>
+      </div>
+
+      <h2 id="listTitle" class="section-title">Top España</h2>
+
+      <div class="radio-grid" id="radioList"></div>
+    </main>
+
+    <div class="bottom-player hidden" id="bottomPlayer">
+      <div class="player-info">
+        <div class="eq-animation hidden" id="visualizer">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <i class="ri-radio-line default-player-icon" id="playerIcon"></i>
+        <img id="playerLogo" class="player-logo hidden" src="" alt="logo" />
+        <div class="player-text">
+          <strong id="playerStationName">Selecciona una emisora</strong>
+          <span id="playerStatus">En directo</span>
+        </div>
+      </div>
+      <div class="player-controls">
+        <div class="player-loading-spinner hidden" id="playerLoading"></div>
+        <button class="play-btn" id="playPauseBtn" onclick="togglePlay()">
+          <i class="ri-play-fill" id="playIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <audio id="audioElement" preload="none"></audio>
+
+    <div id="toast" class="toast-box">
+      <i id="toastIcon" class="ri-information-line"></i
+      ><span id="toastMessage"></span>
+    </div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

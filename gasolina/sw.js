@@ -3,15 +3,16 @@ const urlsToCache = [
   "./",
   "./index.html",
   "./css/styles.css",
-  "./css/leaflet.css",
-  "./css/remixicon.css",
-  "./css/MarkerCluster.css",
-  "./css/MarkerCluster.Default.css",
+  "../css/leaflet.css",
+  "../css/remixicon.css",
+  "../css/MarkerCluster.css",
+  "../css/MarkerCluster.Default.css",
   "./js/main.js",
-  "./js/leaflet.js",
-  "./js/leaflet.markercluster.js",
+  "../js/leaflet.js",
+  "../js/leaflet.markercluster.js",
   "./manifest.json",
-  "./fonts/remixicon.woff2"
+  "../fonts/remixicon.woff2",
+  "../logo.png",
 ];
 
 self.addEventListener("install", (event) => {

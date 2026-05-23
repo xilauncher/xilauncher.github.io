@@ -13,6 +13,7 @@
   isOfflineDemo: false,
   map: null,
   markerGroup: null,
+  userMarker: null,
 };
 
 const FUEL_KEYS = {
@@ -499,7 +500,7 @@ function initMap() {
 
   APP_STATE.markerGroup = L.markerClusterGroup({
     chunkedLoading: true,
-    maxClusterRadius: 50,
+    maxClusterRadius: 25,
     spiderfyOnMaxZoom: true,
   }).addTo(APP_STATE.map);
 }
@@ -720,10 +721,11 @@ function requestUserLocation() {
   btnText.textContent = "Buscando GPS...";
   navigator.geolocation.getCurrentPosition(
     (position) => {
-      APP_STATE.userLocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      };
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      APP_STATE.userLocation = { lat, lng };
+
       btnText.textContent = "GPS Conectado";
       btn.className = "gps-btn-bottom success";
       showToast(
@@ -733,7 +735,32 @@ function requestUserLocation() {
       );
       document.getElementById("sortSelector").value = "closest";
       toggleFilterSheet(false);
+
       applyFilters();
+
+      if (APP_STATE.map) {
+        if (APP_STATE.userMarker) {
+          APP_STATE.userMarker.setLatLng([lat, lng]);
+        } else {
+          const userIcon = L.divIcon({
+            className: "leaflet-user-marker",
+            html: `<div class="user-location-dot"></div>`,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
+          });
+
+          APP_STATE.userMarker = L.marker([lat, lng], {
+            icon: userIcon,
+            zIndexOffset: 1000,
+          }).addTo(APP_STATE.map);
+
+          APP_STATE.userMarker.bindPopup(
+            `<div style="font-weight: 800; text-align: center; font-size: 11px;">Estás aquí</div>`,
+          );
+        }
+
+        APP_STATE.map.setView([lat, lng], 14);
+      }
     },
     (error) => {
       btnText.textContent = "Ubicación por GPS";

@@ -12,6 +12,8 @@
 
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/png" href="./logo.png" />
+    <link rel="apple-touch-icon" href="./logo.png" />
     <meta name="theme-color" content="#0f172a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
   </head>
@@ -28,10 +30,31 @@
       </div>
 
       <div class="welcome-section">
-        <h1 id="greetingText">Hola</h1>
+        <div class="greeting-wrapper">
+          <h1 id="greetingText">Hola</h1>
+          <button id="editNameBtn" class="edit-name-btn" title="Cambiar nombre">
+            <i class="ri-pencil-line"></i>
+          </button>
+        </div>
         <p id="clockText" class="clock">--:--</p>
       </div>
     </header>
+
+    <div id="installBanner" class="install-banner hidden">
+      <div class="install-info">
+        <i class="ri-download-cloud-2-line"></i>
+        <div class="install-text">
+          <strong>Instalar XiLauncher</strong>
+          <span>Añádelo a tu pantalla de inicio</span>
+        </div>
+      </div>
+      <div class="install-actions">
+        <button id="closeInstallBtn" class="install-close-btn">
+          <i class="ri-close-line"></i>
+        </button>
+        <button id="installBtn" class="install-action-btn">Instalar</button>
+      </div>
+    </div>
 
     <main class="launcher-main">
       <h2 class="section-title">Mis Aplicaciones</h2>
@@ -52,22 +75,60 @@
           </div>
         </a>
 
-        <div class="app-card disabled" title="Próximamente">
+        <div class="app-grid">
+          <a href="./tiempo/index.html" class="app-card">
+            <div
+              class="app-icon"
+              style="
+                background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+              "
+            >
+              <i class="ri-cloud-windy-fill"></i>
+            </div>
+            <div class="app-details">
+              <h3>Tiempo</h3>
+              <p>Clima, viento y calidad del aire</p>
+            </div>
+          </a>
+        </div>
+
+        <a href="./radio/index.html" class="app-card">
           <div
             class="app-icon"
             style="
-              background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+              background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
             "
           >
-            <i class="ri-add-line"></i>
+            <i class="ri-radio-2-fill"></i>
           </div>
           <div class="app-details">
-            <h3>Nueva App</h3>
-            <p>En desarrollo...</p>
+            <h3>Radio</h3>
+            <p>Emisoras en directo</p>
           </div>
-        </div>
+        </a>
       </div>
     </main>
+
+    <div id="nameModal" class="custom-modal hidden">
+      <div class="custom-modal-card">
+        <h3 class="modal-title">¿Cómo te llamas?</h3>
+        <p class="modal-desc">Personaliza tu experiencia en XiLauncher.</p>
+        <input
+          type="text"
+          id="nameInput"
+          class="modal-input"
+          placeholder="Tu nombre..."
+          maxlength="15"
+          autocomplete="off"
+        />
+        <div class="modal-actions">
+          <button id="cancelNameBtn" class="modal-btn cancel-btn">
+            Cancelar
+          </button>
+          <button id="saveNameBtn" class="modal-btn save-btn">Guardar</button>
+        </div>
+      </div>
+    </div>
 
     <script src="js/main.js"></script>
   </body>
