@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>XiLauncher | Hub Central</title>
+
+    <link href="css/remixicon.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+  </head>
+  <body>
+    <header class="launcher-header">
+      <div class="header-top">
+        <div class="brand">
+          <i class="ri-apps-2-fill"></i>
+          <span>XiLauncher</span>
+        </div>
+        <button id="themeToggleBtn" class="action-btn" title="Cambiar tema">
+          <i id="themeIcon" class="ri-moon-fill"></i>
+        </button>
+      </div>
+
+      <div class="welcome-section">
+        <h1 id="greetingText">Hola</h1>
+        <p id="clockText" class="clock">--:--</p>
+      </div>
+    </header>
+
+    <main class="launcher-main">
+      <h2 class="section-title">Mis Aplicaciones</h2>
+
+      <div class="app-grid">
+        <a href="./gasolina/index.html" class="app-card">
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            "
+          >
+            <i class="ri-gas-station-fill"></i>
+          </div>
+          <div class="app-details">
+            <h3>Gasolina</h3>
+            <p>Precios oficiales en tiempo real</p>
+          </div>
+        </a>
+
+        <div class="app-card disabled" title="Próximamente">
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            "
+          >
+            <i class="ri-add-line"></i>
+          </div>
+          <div class="app-details">
+            <h3>Nueva App</h3>
+            <p>En desarrollo...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

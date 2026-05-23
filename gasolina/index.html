@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>XiLauncher | Gasolina</title>
+    <link rel="stylesheet" href="css/leaflet.css" />
+    <script src="js/leaflet.js"></script>
+    <link href="css/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/MarkerCluster.css" />
+    <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+    <script src="js/leaflet.markercluster.js"></script>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/png" href="./logo.png" />
+    <link rel="apple-touch-icon" href="./logo.png" />
+    <meta name="theme-color" content="#0284c7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body
+    class="bg-slate-50 dark:bg-slate-900 h-full flex flex-col transition-colors duration-200 overflow-hidden"
+  >
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <i class="ri-gas-station-fill spinner-icon"></i>
+      </div>
+      <h2 class="loading-title">Sincronizando Gasolineras...</h2>
+      <p class="loading-subtitle" id="loadingMessage">
+        Conectando con la base de datos oficial del Ministerio.
+      </p>
+    </div>
+
+    <header class="app-header">
+      <div class="brand-container">
+        <div class="brand-logo"><i class="ri-gas-station-fill"></i></div>
+        <div>
+          <div class="brand-title">
+            Gasolina <span class="pwa-badge">XiLauncher</span>
+          </div>
+          <div class="status-text">
+            <i class="ri-checkbox-blank-circle-fill"></i
+            ><span id="dataStatus">API Ministerio</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button
+          onclick="toggleDarkMode()"
+          class="header-btn"
+          title="Cambiar Tema"
+        >
+          <i id="themeIcon" class="ri-moon-fill"></i>
+        </button>
+        <button
+          onclick="fetchGasPrices()"
+          class="header-btn"
+          title="Recargar Precios"
+        >
+          <i class="ri-refresh-line"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="quick-search-bar">
+      <div class="search-input-wrapper">
+        <i class="ri-search-line"></i>
+        <input
+          type="text"
+          id="searchQuery"
+          oninput="applyFilters()"
+          placeholder="Buscar gasolinera o dirección..."
+          class="search-field"
+        />
+      </div>
+    </div>
+
+    <main class="main-container">
+      <div id="filterSheet" class="bottom-sheet-backdrop">
+        <div class="bottom-sheet-content">
+          <div class="bottom-sheet-handle"></div>
+          <div class="bottom-sheet-header">
+            <h3 class="bottom-sheet-title">
+              <i class="ri-equalizer-line"></i> Filtros de Búsqueda
+            </h3>
+            <button onclick="resetFilters()" class="clear-filters-link">
+              Limpiar
+            </button>
+          </div>
+          <div class="bottom-sheet-body">
+            <div class="filter-group">
+              <label class="filter-label">Combustible</label>
+              <select
+                id="fuelSelector"
+                onchange="handleFuelChange()"
+                class="filter-select"
+              >
+                <option value="gasolina95" selected>Gasolina 95 (E5)</option>
+                <option value="gasolina98">Gasolina 98 (E5)</option>
+                <option value="dieselA">Diésel A / Gasóleo A</option>
+                <option value="glp">Autogás / GLP</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Provincia</label>
+              <select
+                id="provinceSelector"
+                onchange="handleProvinceChange()"
+                class="filter-select"
+              >
+                <option value="TODAS">-- Toda España --</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Municipio</label>
+              <select
+                id="municipalitySelector"
+                onchange="applyFilters()"
+                class="filter-select"
+                disabled
+              >
+                <option value="TODOS">-- Todos los Municipios --</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Ordenar por</label>
+              <select
+                id="sortSelector"
+                onchange="applyFilters()"
+                class="filter-select"
+              >
+                <option value="cheapest" selected>Precio: Más Barato</option>
+                <option value="closest">Distancia: Más Cercano</option>
+                <option value="name">Nombre: A - Z</option>
+              </select>
+            </div>
+            <button
+              onclick="requestUserLocation()"
+              id="gpsButton"
+              class="gps-btn-bottom"
+            >
+              <i class="ri-focus-3-line"></i
+              ><span id="gpsText">Ubicación por GPS</span>
+            </button>
+          </div>
+          <div class="bottom-sheet-footer">
+            <button
+              onclick="toggleFilterSheet(false)"
+              class="apply-filters-btn"
+            >
+              Aplicar Filtros
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <section id="tab-list" class="spa-tab">
+        <div class="stations-count-header">
+          <div>
+            Mostrando
+            <span id="stationsCount" class="highlight">0</span> gasolineras
+          </div>
+          <div id="filterDetails">Toda España</div>
+        </div>
+        <div id="stationsList" class="stations-scroll-container"></div>
+      </section>
+
+      <section id="tab-map" class="spa-tab hidden" style="position: relative">
+        <div id="map" style="height: 100%; width: 100%"></div>
+        <div class="map-legend">
+          <p class="legend-title">
+            <i class="ri-map-pin-line"></i> Comparativa
+          </p>
+          <div class="legend-row">
+            <span class="legend-dot" style="background-color: #10b981"></span
+            ><span>Barato</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-dot" style="background-color: #f59e0b"></span
+            ><span>Medio</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-dot" style="background-color: #f43f5e"></span
+            ><span>Caro</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="tab-stats"
+        class="spa-tab hidden"
+        style="overflow-y: auto; padding-bottom: 84px"
+      >
+        <div class="stats-main-card">
+          <h3 class="stats-title">
+            <i class="ri-line-chart-line"></i> Análisis de Precios (Filtro
+            Activo)
+          </h3>
+          <div class="stats-boxes-grid">
+            <div class="stat-card-view scv-min">
+              <span class="scv-label scv-label-min">Más Económica</span>
+              <span id="statMinPrice" class="scv-value scv-value-min"
+                >-- €/L</span
+              >
+              <p id="statMinStation" class="scv-desc">--</p>
+            </div>
+            <div class="stat-card-view scv-avg">
+              <span class="scv-label scv-label-avg">Precio Medio</span>
+              <span id="statAvgPrice" class="scv-value scv-value-avg"
+                >-- €/L</span
+              >
+              <p id="statAvgDetails" class="scv-desc">
+                Media de tu selección actual
+              </p>
+            </div>
+            <div class="stat-card-view scv-max">
+              <span class="scv-label scv-label-max">Más Costosa</span>
+              <span id="statMaxPrice" class="scv-value scv-value-max"
+                >-- €/L</span
+              >
+              <p id="statMaxStation" class="scv-desc">--</p>
+            </div>
+          </div>
+          <div class="distribution-card">
+            <h4 class="stats-title" style="font-size: 12px">
+              Distribución Comparativa
+            </h4>
+            <div class="distribution-row">
+              <div class="dist-labels">
+                <span>Mínimo</span
+                ><span id="statBarMin" style="font-weight: 800">--</span>
+              </div>
+              <div class="dist-bar-bg">
+                <div
+                  id="statBarMinPercent"
+                  class="dist-bar-fill dbf-min"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+            <div class="distribution-row">
+              <div class="dist-labels">
+                <span>Promedio</span
+                ><span id="statBarAvg" style="font-weight: 800">--</span>
+              </div>
+              <div class="dist-bar-bg">
+                <div
+                  id="statBarAvgPercent"
+                  class="dist-bar-fill dbf-avg"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+            <div class="distribution-row">
+              <div class="dist-labels">
+                <span>Máximo</span
+                ><span id="statBarMax" style="font-weight: 800">--</span>
+              </div>
+              <div class="dist-bar-bg">
+                <div
+                  id="statBarMaxPercent"
+                  class="dist-bar-fill dbf-max"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+            <div class="savings-info-box">
+              <i class="ri-information-line"></i>
+              <p>
+                <strong>Ahorro estimado:</strong> Ahorras unos
+                <span id="savingsEstimate" style="font-weight: 800"
+                  >0.00 €</span
+                >
+                por depósito (50L) escogiendo la más barata.
+              </p>
+            </div>
+          </div>
+          <div class="distribution-card">
+            <h4 class="stats-title" style="font-size: 12px">
+              Top 5 Surtidores más baratos
+            </h4>
+            <div id="statsTopList" class="top-stations-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-favorites" class="spa-tab hidden">
+        <div
+          class="stations-count-header"
+          style="
+            background-color: var(--accent-amber-bg);
+            color: var(--accent-amber-text);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+          "
+        >
+          <span
+            ><i class="ri-star-fill"></i> Surtidores favoritos guardados
+            localmente.</span
+          >
+        </div>
+        <div id="favoritesList" class="stations-scroll-container"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button
+        onclick="switchTab('tab-list')"
+        id="btn-tab-list"
+        class="nav-btn active"
+      >
+        <i class="ri-align-justify"></i><span>Lista</span>
+      </button>
+      <button onclick="switchTab('tab-map')" id="btn-tab-map" class="nav-btn">
+        <i class="ri-map-2-line"></i><span>Mapa</span>
+      </button>
+      <button
+        onclick="toggleFilterSheet(true)"
+        class="nav-btn nav-btn-floating"
+      >
+        <i class="ri-filter-3-line"></i>
+      </button>
+      <button
+        onclick="switchTab('tab-stats')"
+        id="btn-tab-stats"
+        class="nav-btn"
+      >
+        <i class="ri-bar-chart-2-line"></i><span>Estadísticas</span>
+      </button>
+      <button
+        onclick="switchTab('tab-favorites')"
+        id="btn-tab-favorites"
+        class="nav-btn"
+      >
+        <i class="ri-star-line"></i><span>Favoritas</span>
+      </button>
+    </nav>
+
+    <div id="detailModal" class="detail-modal">
+      <div class="detail-modal-card">
+        <div class="modal-header-gradient">
+          <button onclick="closeDetailModal()" class="close-modal-btn">
+            <i class="ri-close-line"></i>
+          </button>
+          <span id="modalBrandBadge" class="modal-brand-tag">REPSOL</span>
+          <h3 id="modalName" class="modal-title-text">Nombre</h3>
+          <p id="modalAddress" class="modal-address-text">
+            <i class="ri-map-pin-line"></i> Dirección
+          </p>
+        </div>
+        <div class="modal-body-scroll">
+          <div class="modal-grid-stats">
+            <div class="modal-stat-box">
+              <span class="modal-stat-title">Horario</span
+              ><span id="modalHours" class="modal-stat-value">L-D: 24h</span>
+            </div>
+            <div class="modal-stat-box">
+              <span class="modal-stat-title">Municipio</span
+              ><span id="modalLocality" class="modal-stat-value">Madrid</span>
+            </div>
+          </div>
+          <div class="modal-prices-section">
+            <h4 class="modal-section-title">Tarifas en tiempo real</h4>
+            <div id="modalPricesList" class="modal-prices-list"></div>
+          </div>
+        </div>
+        <div class="modal-footer-row">
+          <a id="modalRouteBtn" href="#" target="_blank" class="modal-btn-route"
+            ><i class="ri-navigation-line"></i><span>Ruta GPS</span></a
+          >
+          <button id="modalFavBtn" class="modal-btn-fav">
+            <i class="ri-star-line"></i><span>Favorita</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast-box">
+      <i id="toastIcon" class="ri-information-line"></i
+      ><span id="toastMessage">Sincronizado</span>
+    </div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
