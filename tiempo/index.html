@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>XiLauncher | Tiempo</title>
+    
+    <link href="../css/remixicon.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="apple-touch-icon" href="../logo.png" />
+    <link rel="manifest" href="manifest.json" />
+    
+    <meta name="theme-color" content="#0284c7" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="bg-slate-50 dark:bg-slate-900 h-full flex flex-col transition-colors duration-200 overflow-hidden">
+    
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <i class="ri-sun-cloudy-line spinner-icon"></i>
+      </div>
+      <h2 class="loading-title">Consultando el cielo...</h2>
+      <p class="loading-subtitle">Sincronizando datos meteorológicos y calidad del aire.</p>
+    </div>
+
+    <header class="app-header">
+      <div class="brand-container">
+        <a href="../index.html" class="back-btn"><i class="ri-arrow-left-s-line"></i></a>
+        <div class="brand-logo"><i class="ri-cloud-windy-line"></i></div>
+        <div>
+          <div class="brand-title">Tiempo <span class="pwa-badge">XiLauncher</span></div>
+          <div class="status-text"><i class="ri-checkbox-blank-circle-fill"></i><span id="dataStatus">Open-Meteo</span></div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button onclick="toggleDarkMode()" class="header-btn" title="Cambiar Tema"><i id="themeIcon" class="ri-moon-fill"></i></button>
+        <button onclick="fetchWeatherData()" class="header-btn" title="Actualizar"><i class="ri-refresh-line"></i></button>
+      </div>
+    </header>
+
+    <div class="quick-search-bar">
+      <div class="search-input-wrapper">
+        <i class="ri-search-line"></i>
+        <input type="text" id="searchQuery" placeholder="Buscar ciudad..." class="search-field" autocomplete="off" />
+        <button onclick="requestUserLocation()" class="gps-search-btn" title="Mi ubicación"><i class="ri-focus-3-line"></i></button>
+      </div>
+      <div id="searchResults" class="search-dropdown hidden"></div>
+    </div>
+
+    <main class="main-container" id="mainScrollArea">
+      
+      <section id="tab-today" class="spa-tab">
+        <div class="current-weather-card">
+          <div class="cwc-header">
+            <h2 id="cityName" class="city-name">--</h2>
+            <span id="currentDate" class="current-date">--</span>
+          </div>
+          <div class="cwc-body">
+            <i id="currentIcon" class="ri-sun-line weather-main-icon"></i>
+            <div class="temp-display">
+              <span id="currentTemp" class="temp-huge">--</span><span class="temp-unit">°C</span>
+            </div>
+            <p id="currentCondition" class="weather-desc">--</p>
+            <div class="high-low-box">
+              <span><i class="ri-arrow-up-line"></i> <span id="tempMax">--</span>°</span>
+              <span><i class="ri-arrow-down-line"></i> <span id="tempMin">--</span>°</span>
+              <span>Sensación: <span id="tempFeels">--</span>°</span>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="section-title">Detalles Actuales</h3>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon humidity-color"><i class="ri-drop-line"></i></div>
+            <div class="metric-data">
+              <span class="metric-label">Humedad</span>
+              <span id="metricHumidity" class="metric-value">--%</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon wind-color"><i class="ri-windy-line"></i></div>
+            <div class="metric-data">
+              <span class="metric-label">Viento</span>
+              <span id="metricWind" class="metric-value">-- km/h</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon uv-color"><i class="ri-sun-line"></i></div>
+            <div class="metric-data">
+              <span class="metric-label">Índice UV</span>
+              <span id="metricUV" class="metric-value">--</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon aqi-color"><i class="ri-leaf-line"></i></div>
+            <div class="metric-data">
+              <span class="metric-label">Calidad Aire (AQI)</span>
+              <span id="metricAQI" class="metric-value">--</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="aqi-info-box" id="aqiAlertBox">
+          <i class="ri-information-line"></i>
+          <p id="aqiDesc">La calidad del aire es buena. Disfruta de actividades al aire libre.</p>
+        </div>
+      </section>
+
+      <section id="tab-week" class="spa-tab hidden">
+        <h3 class="section-title" style="margin-bottom: 12px;">Pronóstico 7 Días</h3>
+        <div id="forecastList" class="forecast-list">
+          </div>
+      </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+      <button onclick="switchTab('tab-today')" id="btn-tab-today" class="nav-btn active">
+        <i class="ri-calendar-event-line"></i><span>Hoy</span>
+      </button>
+      <button onclick="switchTab('tab-week')" id="btn-tab-week" class="nav-btn">
+        <i class="ri-calendar-2-line"></i><span>7 Días</span>
+      </button>
+    </nav>
+
+    <div id="toast" class="toast-box"><i id="toastIcon" class="ri-information-line"></i><span id="toastMessage">Actualizado</span></div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
