@@ -30,12 +30,7 @@
       </div>
 
       <div class="welcome-section">
-        <div class="greeting-wrapper">
-          <h1 id="greetingText">Hola</h1>
-          <button id="editNameBtn" class="edit-name-btn" title="Cambiar nombre">
-            <i class="ri-pencil-line"></i>
-          </button>
-        </div>
+        <h1 id="greetingText">Hola</h1>
         <p id="clockText" class="clock">--:--</p>
       </div>
     </header>
@@ -91,44 +86,8 @@
             </div>
           </a>
         </div>
-
-        <a href="./radio/index.html" class="app-card">
-          <div
-            class="app-icon"
-            style="
-              background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
-            "
-          >
-            <i class="ri-radio-2-fill"></i>
-          </div>
-          <div class="app-details">
-            <h3>Radio</h3>
-            <p>Emisoras en directo</p>
-          </div>
-        </a>
       </div>
     </main>
-
-    <div id="nameModal" class="custom-modal hidden">
-      <div class="custom-modal-card">
-        <h3 class="modal-title">¿Cómo te llamas?</h3>
-        <p class="modal-desc">Personaliza tu experiencia en XiLauncher.</p>
-        <input
-          type="text"
-          id="nameInput"
-          class="modal-input"
-          placeholder="Tu nombre..."
-          maxlength="15"
-          autocomplete="off"
-        />
-        <div class="modal-actions">
-          <button id="cancelNameBtn" class="modal-btn cancel-btn">
-            Cancelar
-          </button>
-          <button id="saveNameBtn" class="modal-btn save-btn">Guardar</button>
-        </div>
-      </div>
-    </div>
 
     <script src="js/main.js"></script>
   </body>
