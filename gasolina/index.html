@@ -40,6 +40,7 @@
     </div>
 
     <header class="app-header">
+      <a href="../index.html" class="back-btn"><i class="ri-arrow-left-s-line"></i></a>
       <div class="brand-container">
         <div class="brand-logo"><i class="ri-gas-station-fill"></i></div>
         <div>
@@ -48,23 +49,15 @@
           </div>
           <div class="status-text">
             <i class="ri-checkbox-blank-circle-fill"></i
-            ><span id="dataStatus">API Ministerio</span>
+            ><span id="dataStatus">Conectado</span>
           </div>
         </div>
       </div>
       <div class="header-actions">
-        <button
-          onclick="toggleDarkMode()"
-          class="header-btn"
-          title="Cambiar Tema"
-        >
+        <button onclick="toggleDarkMode()" class="header-btn" title="Cambiar Tema">
           <i id="themeIcon" class="ri-moon-fill"></i>
         </button>
-        <button
-          onclick="fetchGasPrices()"
-          class="header-btn"
-          title="Recargar Precios"
-        >
+        <button onclick="fetchGasPrices()" class="header-btn" title="Recargar Precios">
           <i class="ri-refresh-line"></i>
         </button>
       </div>

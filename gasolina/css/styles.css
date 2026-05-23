@@ -1372,3 +1372,17 @@ body {
     opacity: 0;
   }
 }
+
+.back-btn {
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1015;
+}
