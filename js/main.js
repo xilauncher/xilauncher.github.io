@@ -48,3 +48,12 @@ function initClock() {
   updateTime();
   setInterval(updateTime, 1000 * 60);
 }
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./sw.js")
+      .then((reg) => console.log("XiLauncher SW registrado:", reg.scope))
+      .catch((err) => console.error("Error registrando SW del Hub:", err));
+  });
+}
