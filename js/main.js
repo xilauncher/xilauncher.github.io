@@ -49,6 +49,45 @@ function initClock() {
   setInterval(updateTime, 1000 * 60);
 }
 
+let deferredPrompt;
+const installBanner = document.getElementById("installBanner");
+const installBtn = document.getElementById("installBtn");
+const closeInstallBtn = document.getElementById("closeInstallBtn");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+
+  deferredPrompt = e;
+
+  if (localStorage.getItem("xilauncher_hide_install") !== "true") {
+    installBanner.classList.remove("hidden");
+  }
+});
+
+installBtn.addEventListener("click", async () => {
+  installBanner.classList.add("hidden");
+
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`Resultado de la instalación: ${outcome}`);
+
+    deferredPrompt = null;
+  }
+});
+
+closeInstallBtn.addEventListener("click", () => {
+  installBanner.classList.add("hidden");
+  localStorage.setItem("xilauncher_hide_install", "true");
+});
+
+window.addEventListener("appinstalled", () => {
+  installBanner.classList.add("hidden");
+  deferredPrompt = null;
+  console.log("¡XiLauncher se ha instalado correctamente!");
+});
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
