@@ -69,7 +69,7 @@ def procesar_todo():
         lineas_resumen = []
         with open(os.path.join(raw_path, 'routes.txt'), 'r', encoding='utf-8-sig') as f:
             for row in csv.DictReader(f):
-                if conf["agency"] and row.get('agency_id') != conf["agency"]:
+                if net == 'consorcio' and row.get('agency_id') != 'CTAG':
                     continue
 
                 rid = row['route_id']
@@ -100,6 +100,8 @@ def procesar_todo():
         with open(os.path.join(raw_path, 'stops.txt'), 'r', encoding='utf-8-sig') as f:
             for row in csv.DictReader(f):
                 raw_id = row['stop_id']
+                if net == 'consorcio' and not raw_id.startswith('3_'):
+                    continue
                 proc_id = raw_id
                 
                 if conf["usar_stop_code"] and row.get('stop_code'):

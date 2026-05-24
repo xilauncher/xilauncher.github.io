@@ -39,7 +39,7 @@
       </div>
       <h2 class="loading-title" id="loadingTitle">Cargando...</h2>
       <p class="loading-subtitle" id="loadingSub">
-        Inicializando base de datos.
+        Conectando con la base de datos.
       </p>
     </div>
 
@@ -113,24 +113,14 @@
             <input
               type="text"
               id="searchParadas"
-              placeholder="Número de parada o calle..."
+              oninput="filterParadas()"
+              placeholder="Nombre o número de parada..."
               class="search-field"
               autocomplete="off"
             />
           </div>
         </div>
-        <div id="paradasList" class="list-container">
-          <div
-            style="
-              text-align: center;
-              color: var(--text-muted);
-              padding: 40px;
-              font-size: 12px;
-            "
-          >
-            API de tiempos reales preparándose... (Fase 3)
-          </div>
-        </div>
+        <div id="paradasList" class="list-container"></div>
       </section>
 
       <section id="view-mapa" class="spa-view hidden" style="padding: 0">
@@ -151,7 +141,7 @@
               font-size: 12px;
             "
           >
-            Información tarifaria en construcción.
+            Información tarifaria (Próximamente).
           </div>
         </div>
       </section>
@@ -191,10 +181,9 @@
         </button>
         <div class="lm-title-box">
           <span class="lm-badge" id="lmBadge">--</span>
-          <h3 class="lm-name" id="lmName">Nombre de la línea</h3>
+          <h3 class="lm-name" id="lmName">Línea</h3>
         </div>
       </div>
-
       <div class="lm-direction-bar">
         <button
           class="lm-dir-btn active"
@@ -211,12 +200,8 @@
           Dirección Vuelta
         </button>
       </div>
-
       <div class="lm-content">
-        <div class="lm-map-container">
-          <div id="routeMap"></div>
-        </div>
-
+        <div class="lm-map-container"><div id="routeMap"></div></div>
         <div class="lm-tabs">
           <button
             class="lm-tab active"
@@ -233,11 +218,41 @@
             Horarios (Teóricos)
           </button>
         </div>
-
         <div class="lm-tab-content">
           <div id="lmContentParadas" class="timeline-container"></div>
           <div id="lmContentHorarios" class="schedules-container hidden"></div>
         </div>
+      </div>
+    </div>
+
+    <div id="stopDetailModal" class="full-modal hidden">
+      <div class="lm-header" style="background: var(--brand-600)">
+        <button class="lm-back-btn" onclick="closeStopModal()">
+          <i class="ri-arrow-down-s-line"></i>
+        </button>
+        <div class="lm-title-box">
+          <span class="lm-badge" style="background: white; color: black"
+            ><i class="ri-map-pin-time-line"></i
+          ></span>
+          <h3 class="lm-name" id="smName">Cargando parada...</h3>
+        </div>
+      </div>
+      <div
+        class="lm-content"
+        style="
+          background: var(--bg-color);
+          padding: 16px;
+          overflow-y: auto;
+          padding-bottom: 80px;
+        "
+      >
+        <div class="arrival-meta">
+          <span id="smId">Parada: --</span>
+          <div id="smStatus" class="status-badge">
+            <i class="ri-loader-4-line spin"></i> Conectando...
+          </div>
+        </div>
+        <div id="smArrivals" class="arrivals-container"></div>
       </div>
     </div>
 

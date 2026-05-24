@@ -1,4 +1,6 @@
-const CACHE_NAME = "xilauncher-hub";
+const CACHE_NAME = "xilauncher-hub-last";
+const DATA_CACHE_NAME = "xilauncher-transporte-data";
+
 const urlsToCache = [
   "./",
   "./index.html",
@@ -22,7 +24,8 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+          if (key !== CACHE_NAME && key !== DATA_CACHE_NAME)
+            return caches.delete(key);
         }),
       ),
     ),
@@ -31,6 +34,24 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  const url = event.request.url;
+
+  if (url.includes("/transporte/data/")) {
+    event.respondWith(
+      caches.open(DATA_CACHE_NAME).then((cache) => {
+        return fetch(event.request)
+          .then((networkResponse) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          })
+          .catch(() => {
+            return cache.match(event.request);
+          });
+      }),
+    );
+    return;
+  }
+
   event.respondWith(
     caches
       .match(event.request)

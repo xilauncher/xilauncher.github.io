@@ -13,8 +13,8 @@
   --brand-900: #0c4a6e;
 
   --net-urbano: #ef4444;
-  --net-consorcio: #10b981;
-  --net-metro: #ec4899;
+  --net-consorcio: #2563eb;
+  --net-metro: #10b981;
 
   --card-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -49,6 +49,15 @@ html.dark .leaflet-popup-tip {
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+body,
+html {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 *::-webkit-scrollbar {
   display: none;
@@ -64,6 +73,13 @@ body {
   transition:
     background-color 0.2s,
     color 0.2s;
+}
+body,
+html {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .app-header {
@@ -170,14 +186,14 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 .net-btn.active#net-consorcio {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   color: var(--net-consorcio);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(37, 99, 235, 0.3);
 }
 .net-btn.active#net-metro {
-  background: rgba(236, 72, 153, 0.1);
+  background: rgba(16, 185, 129, 0.1);
   color: var(--net-metro);
-  border: 1px solid rgba(236, 72, 153, 0.3);
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .main-container {
@@ -503,12 +519,14 @@ body {
 }
 
 .lm-tab-content {
-  display: none !important;
   flex-grow: 1;
   overflow-y: auto;
   padding: 16px;
   padding-bottom: 60px;
   background: var(--bg-color);
+}
+.lm-tab-content > .hidden {
+  display: none !important;
 }
 
 .timeline-container {
@@ -681,4 +699,250 @@ body {
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   display: inline-block;
+}
+
+.parada-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.parada-card:active {
+  transform: scale(0.98);
+}
+.parada-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(2, 132, 195, 0.1);
+  color: var(--brand-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.parada-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+.parada-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.parada-id {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-top: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.arrival-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+.arrival-meta #smId {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  background: var(--panel-bg);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+.status-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-rt {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+}
+html.dark .status-rt {
+  color: #34d399;
+}
+.status-offline {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
+html.dark .status-offline {
+  color: #fbbf24;
+}
+
+.rt-dot {
+  width: 8px;
+  height: 8px;
+  background-color: currentColor;
+  border-radius: 50%;
+  animation: blink 1.5s infinite;
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.arrivals-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.arrival-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--card-shadow);
+}
+.arrival-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 65%;
+}
+.arrival-line {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.arrival-dest {
+  display: flex;
+  flex-direction: column;
+}
+.arrival-dest strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.arrival-dest span {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.arrival-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.arrival-time strong {
+  font-size: 20px;
+  font-weight: 900;
+  font-family: monospace;
+  line-height: 1;
+}
+.arrival-time span {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.time-rt {
+  color: #10b981;
+}
+html.dark .time-rt {
+  color: #34d399;
+}
+.time-off {
+  color: var(--text-primary);
+}
+
+.parada-nombre {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.fare-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.fare-line {
+  width: 4px;
+  border-radius: 2px;
+  align-self: stretch;
+}
+.fare-content {
+  flex-grow: 1;
+}
+.fare-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.fare-title {
+  font-weight: 800;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+.fare-price {
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+.fare-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.fare-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  margin-left: 6px;
 }

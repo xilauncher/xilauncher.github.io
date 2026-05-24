@@ -43,6 +43,14 @@ html.dark .leaflet-popup-tip {
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  -ms-overflow-style: none; 
+  scrollbar-width: none;
+}
+body, html {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 *::-webkit-scrollbar {
   display: none;
