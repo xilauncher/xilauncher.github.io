@@ -61,7 +61,8 @@ body {
     background-color 0.2s,
     color 0.2s;
 }
-body, html {
+body,
+html {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
@@ -482,34 +483,52 @@ html.dark .corte-bus {
 
 .loading-overlay {
   position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.95);
-  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-color);
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  color: white;
-  transition: opacity 0.3s;
+  align-items: center;
+  z-index: 9999;
 }
+
+.loading-spinner {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .spinner-ring {
-  width: 80px;
-  height: 80px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid var(--brand-600);
   border-radius: 50%;
-  border: 4px solid transparent;
-  border-top-color: var(--brand-500);
-  border-bottom-color: var(--brand-500);
-  animation: spin 1.5s linear infinite;
+  animation: spin 1s linear infinite;
 }
+
+.spinner-icon {
+  font-size: 24px;
+  color: var(--brand-600);
+  margin: 0;
+  padding: 0;
+}
+
 @keyframes spin {
-  to {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
-}
-.spinner-icon {
-  position: absolute;
-  font-size: 24px;
-  color: var(--brand-500);
 }
 .loading-title {
   font-size: 16px;

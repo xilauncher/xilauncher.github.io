@@ -338,22 +338,22 @@ html {
   height: 100% !important;
   z-index: 1;
 }
+
 .gps-floating-btn {
   position: absolute;
-  bottom: 84px;
-  right: 16px;
-  background: var(--panel-bg);
-  border: 1px solid var(--border-color);
-  color: var(--brand-600);
-  width: 44px;
-  height: 44px;
+  bottom: 120px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: var(--brand-600);
+  color: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border: none;
   cursor: pointer;
 }
 
@@ -620,35 +620,54 @@ html {
 
 .loading-overlay {
   position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.95);
-  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-color);
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  color: white;
-  transition: opacity 0.3s;
+  align-items: center;
+  z-index: 9999;
 }
+
+.loading-spinner {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .spinner-ring {
-  width: 80px;
-  height: 80px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid var(--brand-600);
   border-radius: 50%;
-  border: 4px solid transparent;
-  border-top-color: var(--brand-500);
-  border-bottom-color: var(--brand-500);
-  animation: spin 1.5s linear infinite;
+  animation: spin 1s linear infinite;
 }
+
+.spinner-icon {
+  font-size: 24px;
+  color: var(--brand-600);
+  margin: 0;
+  padding: 0;
+}
+
 @keyframes spin {
-  to {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
 }
-.spinner-icon {
-  position: absolute;
-  font-size: 24px;
-  color: var(--brand-500);
-}
+
 .loading-title {
   font-size: 16px;
   font-weight: 800;
@@ -827,13 +846,14 @@ html.dark .status-offline {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: var(--card-shadow);
+  gap: 12px;
 }
 .arrival-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 65%;
+  min-width: 0;
+  flex: 1;
 }
 .arrival-line {
   width: 44px;
@@ -851,14 +871,15 @@ html.dark .status-offline {
 .arrival-dest {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
+
 .arrival-dest strong {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--text-primary);
-  white-space: nowrap;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 .arrival-dest span {
   font-size: 10px;
@@ -867,9 +888,8 @@ html.dark .status-offline {
 }
 
 .arrival-time {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-shrink: 0;
+  text-align: right;
 }
 .arrival-time strong {
   font-size: 20px;
