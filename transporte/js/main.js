@@ -68,7 +68,7 @@ async function loadNetworkData(network) {
     document.getElementById("lineasList").innerHTML = `
       <div style="text-align: center; color: var(--text-muted); padding: 40px;">
         <i class="ri-error-warning-line" style="font-size: 32px;"></i>
-        <p style="margin-top: 10px;">Error al cargar datos. ¿Se ha ejecutado el Python?</p>
+        <p style="margin-top: 10px;">Error al cargar datos.</p>
       </div>`;
   } finally {
     showLoading(false);
