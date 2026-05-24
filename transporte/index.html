@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>XiLauncher | Transporte</title>
+
+    <link rel="stylesheet" href="../css/leaflet.css" />
+    <script src="../js/leaflet.js"></script>
+    <link rel="stylesheet" href="../css/MarkerCluster.css" />
+    <link rel="stylesheet" href="../css/MarkerCluster.Default.css" />
+    <script src="../js/leaflet.markercluster.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <link href="../css/remixicon.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="apple-touch-icon" href="../logo.png" />
+    <link rel="manifest" href="manifest.json" />
+
+    <meta name="theme-color" content="#0284c7" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body
+    class="bg-slate-50 dark:bg-slate-900 h-full flex flex-col transition-colors duration-200 overflow-hidden"
+  >
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <i class="ri-bus-fill spinner-icon"></i>
+      </div>
+      <h2 class="loading-title" id="loadingTitle">Cargando Transporte...</h2>
+      <p class="loading-subtitle" id="loadingSub">
+        Inicializando motor de rutas.
+      </p>
+    </div>
+
+    <header class="app-header">
+      <a href="../index.html" class="back-btn"
+        ><i class="ri-arrow-left-s-line"></i
+      ></a>
+      <div class="brand-title">
+        <i class="ri-route-fill" style="margin-right: 4px"></i> Transporte
+        <span class="pwa-badge">Xi</span>
+      </div>
+      <div class="header-actions">
+        <button
+          onclick="toggleDarkMode()"
+          class="header-btn"
+          title="Cambiar Tema"
+        >
+          <i id="themeIcon" class="ri-moon-fill"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="network-selector">
+      <button
+        class="net-btn active"
+        id="net-urbano"
+        onclick="switchNetwork('urbano')"
+      >
+        <i class="ri-bus-fill"></i> Urbano
+      </button>
+      <button
+        class="net-btn"
+        id="net-consorcio"
+        onclick="switchNetwork('consorcio')"
+      >
+        <i class="ri-bus-wifi-fill"></i> Consorcio
+      </button>
+      <button class="net-btn" id="net-metro" onclick="switchNetwork('metro')">
+        <i class="ri-train-fill"></i> Metro
+      </button>
+    </div>
+
+    <main class="main-container" id="mainScroll">
+      <section id="view-lineas" class="spa-view">
+        <div
+          class="quick-search-bar"
+          style="margin-bottom: 12px; border-radius: 12px"
+        >
+          <div class="search-input-wrapper">
+            <i class="ri-search-line"></i>
+            <input
+              type="text"
+              id="searchLineas"
+              placeholder="Buscar línea o destino..."
+              class="search-field"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div id="lineasList" class="list-container">
+          <div
+            style="
+              text-align: center;
+              color: var(--text-muted);
+              padding: 40px;
+              font-size: 12px;
+            "
+          >
+            Motor GTFS preparándose... (Fase 2)
+          </div>
+        </div>
+      </section>
+
+      <section id="view-paradas" class="spa-view hidden">
+        <div
+          class="quick-search-bar"
+          style="margin-bottom: 12px; border-radius: 12px"
+        >
+          <div class="search-input-wrapper">
+            <i class="ri-search-line"></i>
+            <input
+              type="text"
+              id="searchParadas"
+              placeholder="Número de parada o calle..."
+              class="search-field"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div id="paradasList" class="list-container">
+          <div
+            style="
+              text-align: center;
+              color: var(--text-muted);
+              padding: 40px;
+              font-size: 12px;
+            "
+          >
+            API de tiempos reales preparándose... (Fase 3)
+          </div>
+        </div>
+      </section>
+
+      <section id="view-mapa" class="spa-view hidden" style="padding: 0">
+        <div id="map"></div>
+        <button onclick="requestUserLocation()" class="gps-floating-btn">
+          <i class="ri-focus-3-line"></i>
+        </button>
+      </section>
+
+      <section id="view-tarifas" class="spa-view hidden">
+        <h2 class="section-title">Tarifas y Bonos</h2>
+        <div id="tarifasList" class="list-container"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button
+        onclick="switchView('lineas')"
+        id="btn-view-lineas"
+        class="nav-btn active"
+      >
+        <i class="ri-route-line"></i><span>Líneas</span>
+      </button>
+      <button
+        onclick="switchView('paradas')"
+        id="btn-view-paradas"
+        class="nav-btn"
+      >
+        <i class="ri-map-pin-2-line"></i><span>Paradas</span>
+      </button>
+      <button onclick="switchView('mapa')" id="btn-view-mapa" class="nav-btn">
+        <i class="ri-map-2-line"></i><span>Mapa</span>
+      </button>
+      <button
+        onclick="switchView('tarifas')"
+        id="btn-view-tarifas"
+        class="nav-btn"
+      >
+        <i class="ri-ticket-2-line"></i><span>Tarifas</span>
+      </button>
+    </nav>
+
+    <div id="lineDetailModal" class="full-modal hidden"></div>
+
+    <div id="toast" class="toast-box">
+      <i id="toastIcon" class="ri-information-line"></i
+      ><span id="toastMessage"></span>
+    </div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

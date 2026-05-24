@@ -1,0 +1,34 @@
+name: Procesar GTFS a JSON
+
+on:
+  push:
+    paths:
+      - "raw_gtfs/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  procesar-gtfs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Ejecutar el procesador GTFS
+        run: python scripts/procesar_gtfs.py
+
+      - name: Subir los JSON generados a GitHub
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add transporte/data/
+          git commit -m "🚀 Automático: GTFS convertido a JSON para la PWA" || echo "No hay cambios nuevos"
+          git push
