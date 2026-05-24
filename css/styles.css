@@ -399,3 +399,10 @@ body {
   box-shadow: none;
   border: 2px dashed var(--brand-500, #38bdf8);
 }
+
+.app-card.ready-to-drag {
+  transform: scale(1.05);
+  box-shadow: 0 15px 30px -5px rgba(2, 132, 195, 0.4);
+  border-color: var(--brand-500);
+  z-index: 50;
+}

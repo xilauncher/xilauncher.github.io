@@ -116,7 +116,62 @@ function initDragAndDrop() {
   }
 
   cards.forEach((card) => {
+    let pressTimer;
+    let isLongPress = false;
+    let startX = 0,
+      startY = 0;
+
+    const startPress = (e) => {
+      isLongPress = false;
+
+      if (e.type === "touchstart") {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      }
+
+      pressTimer = setTimeout(() => {
+        isLongPress = true;
+        card.classList.add("ready-to-drag");
+        if (navigator.vibrate) navigator.vibrate(40);
+      }, 400);
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isLongPress && e.type === "touchmove") {
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        if (
+          Math.abs(currentX - startX) > 10 ||
+          Math.abs(currentY - startY) > 10
+        ) {
+          clearTimeout(pressTimer);
+        }
+      }
+    };
+
+    const cancelPress = () => {
+      clearTimeout(pressTimer);
+      card.classList.remove("ready-to-drag");
+      setTimeout(() => {
+        isLongPress = false;
+      }, 10);
+    };
+
+    card.addEventListener("mousedown", startPress);
+    card.addEventListener("touchstart", startPress, { passive: true });
+    card.addEventListener("touchmove", handleTouchMove, { passive: true });
+
+    card.addEventListener("mouseup", cancelPress);
+    card.addEventListener("touchend", cancelPress);
+    card.addEventListener("touchcancel", cancelPress);
+    card.addEventListener("mouseleave", cancelPress);
+
     card.addEventListener("dragstart", (e) => {
+      if (!isLongPress) {
+        e.preventDefault();
+        return;
+      }
+      card.classList.remove("ready-to-drag");
       card.classList.add("dragging");
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", card.dataset.id);
@@ -124,6 +179,8 @@ function initDragAndDrop() {
 
     card.addEventListener("dragend", () => {
       card.classList.remove("dragging");
+      card.classList.remove("ready-to-drag");
+      isLongPress = false;
       saveOrder();
     });
   });
@@ -152,7 +209,6 @@ function initDragAndDrop() {
         const box = child.getBoundingClientRect();
         const boxCenterX = box.left + box.width / 2;
         const boxCenterY = box.top + box.height / 2;
-
         const offset = Math.hypot(x - boxCenterX, y - boxCenterY);
 
         if (offset < closest.offset && y < box.bottom + 20) {

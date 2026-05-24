@@ -35,10 +35,21 @@ document.addEventListener("DOMContentLoaded", () => {
   async function fetchNearbyServices(lat, lon, amenity) {
     resultsContainer.innerHTML = `<div class="status-msg"><i class="ri-loader-4-line ri-spin"></i> Buscando servicios cercanos en la red...</div>`;
 
+    let queryBody = `nwr["amenity"="${amenity}"](around:7000, ${lat}, ${lon});`;
+
+    if (amenity === "hospital") {
+      queryBody = `
+        (
+          nwr["amenity"~"hospital|clinic"](around:7000, ${lat}, ${lon});
+          nwr["healthcare"~"hospital|clinic|centre"](around:7000, ${lat}, ${lon});
+        );
+      `;
+    }
+
     const query = `
       [out:json];
-      node["amenity"="${amenity}"](around:5000, ${lat}, ${lon});
-      out center 15;
+      ${queryBody}
+      out center;
     `;
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
 
@@ -47,30 +58,43 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
 
       if (!data.elements || data.elements.length === 0) {
-        showError("No se han encontrado resultados en 5km a la redonda.");
+        showError("No se han encontrado resultados en 7km a la redonda.");
         return;
       }
 
-      // Procesar y ordenar por distancia
-      let places = data.elements.map((el) => {
-        const placeLat = el.lat;
-        const placeLon = el.lon;
-        const distance = calculateDistance(lat, lon, placeLat, placeLon);
+      let places = data.elements
+        .map((el) => {
+          const placeLat = el.lat || (el.center && el.center.lat);
+          const placeLon = el.lon || (el.center && el.center.lon);
 
-        let defaultName = "Servicio (Sin nombre)";
-        if (amenity === "hospital") defaultName = "Centro Médico (Sin nombre)";
-        if (amenity === "pharmacy") defaultName = "Farmacia (Sin nombre)";
-        if (amenity === "police")
-          defaultName = "Comisaría / Puesto (Sin nombre)";
+          if (!placeLat || !placeLon) return null;
 
-        const name = el.tags.name || defaultName;
+          const distance = calculateDistance(lat, lon, placeLat, placeLon);
 
-        return { name, lat: placeLat, lon: placeLon, distance };
-      });
+          let defaultName = "Servicio Médico";
+          if (amenity === "pharmacy") defaultName = "Farmacia";
+          if (amenity === "police") defaultName = "Comisaría / Puesto";
 
-      places.sort((a, b) => a.distance - b.distance);
+          const name = el.tags.name || defaultName;
 
-      renderResults(places.slice(0, 5));
+          return { name, lat: placeLat, lon: placeLon, distance };
+        })
+        .filter((place) => place !== null);
+
+      const uniquePlaces = [];
+      const seenNames = new Set();
+
+      for (const place of places) {
+        const cleanName = place.name.toLowerCase().trim();
+        if (!seenNames.has(cleanName)) {
+          seenNames.add(cleanName);
+          uniquePlaces.push(place);
+        }
+      }
+
+      uniquePlaces.sort((a, b) => a.distance - b.distance);
+
+      renderResults(uniquePlaces.slice(0, 6));
     } catch (err) {
       showError(
         "Error de conexión. Comprueba tu internet e inténtalo de nuevo.",
@@ -112,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radio de la Tierra en km
+    const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
@@ -122,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distancia en km
+    return R * c;
   }
 });
 
