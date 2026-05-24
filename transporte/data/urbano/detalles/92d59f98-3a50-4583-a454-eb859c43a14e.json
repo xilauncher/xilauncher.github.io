@@ -1,1 +1,1 @@
-{"info": {"id": "92d59f98-3a50-4583-a454-eb859c43a14e", "short_name": "F5", "long_name": "ALBAICIN-FERIAL", "color": "#0000FF"}, "ida": {"shape": [], "paradas": [], "horarios": {}}, "vuelta": {"shape": [], "paradas": [], "horarios": {}}}
+{"info": {"id": "92d59f98-3a50-4583-a454-eb859c43a14e", "short_name": "F5", "long_name": "ALBAICIN-FERIAL", "color": "#0000FF"}, "ida": {"shape": [], "paradas": [], "horarios_cabecera": {}, "horarios_paradas": {}}, "vuelta": {"shape": [], "paradas": [], "horarios_cabecera": {}, "horarios_paradas": {}}}

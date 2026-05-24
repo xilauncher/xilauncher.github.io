@@ -1,1 +1,1 @@
-{"info": {"id": "5f388836-e5f2-4b0c-9f71-151f61e61d29", "short_name": "F2", "long_name": "ZAIDIN-FERIAL", "color": "#FF0000"}, "ida": {"shape": [], "paradas": [], "horarios": {}}, "vuelta": {"shape": [], "paradas": [], "horarios": {}}}
+{"info": {"id": "5f388836-e5f2-4b0c-9f71-151f61e61d29", "short_name": "F2", "long_name": "ZAIDIN-FERIAL", "color": "#FF0000"}, "ida": {"shape": [], "paradas": [], "horarios_cabecera": {}, "horarios_paradas": {}}, "vuelta": {"shape": [], "paradas": [], "horarios_cabecera": {}, "horarios_paradas": {}}}
