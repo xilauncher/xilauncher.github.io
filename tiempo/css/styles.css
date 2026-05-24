@@ -42,7 +42,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-primary);
   font-family: -apple-system, sans-serif;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -227,7 +227,7 @@ body {
   flex-grow: 1;
   overflow-y: auto;
   padding: 16px;
-  padding-bottom: 84px;
+  padding-bottom: 120px;
   display: flex;
   flex-direction: column;
   gap: 20px;

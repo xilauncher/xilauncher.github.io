@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>XiLauncher | Parkings</title>
+
+    <link rel="stylesheet" href="../css/leaflet.css" />
+    <script src="../js/leaflet.js"></script>
+    <link href="../css/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/MarkerCluster.css" />
+    <link rel="stylesheet" href="../css/MarkerCluster.Default.css" />
+    <script src="../js/leaflet.markercluster.js"></script>
+
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="apple-touch-icon" href="../logo.png" />
+    <link rel="manifest" href="manifest.json" />
+
+    <meta name="theme-color" content="#0284c7" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body
+    class="bg-slate-50 dark:bg-slate-900 h-full flex flex-col transition-colors duration-200 overflow-hidden"
+  >
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <i class="ri-parking-box-line spinner-icon"></i>
+      </div>
+      <h2 class="loading-title">Buscando aparcamiento...</h2>
+      <p class="loading-subtitle">Conectando con Movilidad Granada.</p>
+    </div>
+
+    <header class="app-header">
+      <a href="../index.html" class="back-btn"
+        ><i class="ri-arrow-left-s-line"></i
+      ></a>
+      <div class="brand-title">
+        <i class="ri-parking-box-fill" style="margin-right: 4px"></i> Parkings
+        <span class="pwa-badge">Xi</span>
+      </div>
+      <div class="header-actions">
+        <button
+          onclick="toggleDarkMode()"
+          class="header-btn"
+          title="Cambiar Tema"
+        >
+          <i id="themeIcon" class="ri-moon-fill"></i>
+        </button>
+        <button
+          onclick="fetchParkingData()"
+          class="header-btn"
+          title="Actualizar Plazas"
+        >
+          <i class="ri-refresh-line"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="quick-search-bar">
+      <div class="search-input-wrapper">
+        <i class="ri-search-line"></i>
+        <input
+          type="text"
+          id="searchQuery"
+          oninput="applyFilters()"
+          placeholder="Buscar parking..."
+          class="search-field"
+          autocomplete="off"
+        />
+        <button
+          onclick="requestUserLocation()"
+          class="gps-search-btn"
+          title="Mi ubicación"
+        >
+          <i class="ri-focus-3-line"></i>
+        </button>
+      </div>
+    </div>
+
+    <main class="main-container">
+      <section id="tab-list" class="spa-tab">
+        <div class="stations-count-header">
+          <div>
+            <span id="parkingsCount" class="highlight">0</span> aparcamientos
+          </div>
+          <div id="lastUpdateText">Actualizado ahora</div>
+        </div>
+        <div id="parkingsList" class="stations-scroll-container"></div>
+      </section>
+
+      <section id="tab-map" class="spa-tab hidden" style="position: relative">
+        <div id="map" style="height: 100%; width: 100%"></div>
+        <div class="map-legend">
+          <p class="legend-title">
+            <i class="ri-map-pin-line"></i> Plazas Libres
+          </p>
+          <div class="legend-row">
+            <span class="legend-dot" style="background-color: #10b981"></span
+            ><span>+50 Libres</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-dot" style="background-color: #f59e0b"></span
+            ><span>Pocas</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-dot" style="background-color: #f43f5e"></span
+            ><span>Lleno / Cerrado</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button
+        onclick="switchTab('tab-list')"
+        id="btn-tab-list"
+        class="nav-btn active"
+      >
+        <i class="ri-align-justify"></i><span>Lista</span>
+      </button>
+      <button onclick="switchTab('tab-map')" id="btn-tab-map" class="nav-btn">
+        <i class="ri-map-2-line"></i><span>Mapa</span>
+      </button>
+    </nav>
+
+    <div id="toast" class="toast-box">
+      <i id="toastIcon" class="ri-information-line"></i
+      ><span id="toastMessage">Sincronizado</span>
+    </div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

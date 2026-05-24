@@ -99,7 +99,7 @@ async function fetchGasPrices() {
   showLoading(true, "Descargando carburantes oficiales de España...");
   const apiEndpoint =
     "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/";
-  const proxyUrl = "https://proxy.contacto-granago.workers.dev/?url=";
+  const proxyUrl = "https://cors.xilauncher.workers.dev/?url=";
 
   let dataFetched = null;
 
