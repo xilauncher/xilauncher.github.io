@@ -3,38 +3,75 @@ import json
 import os
 from collections import defaultdict
 
+CONFIG = {
+    "urbano": {
+        "dir": "raw_gtfs/urbano",
+        "agency": None,
+        "usar_stop_code": True,
+        "prefijo_quitar": None
+    },
+    "consorcio": {
+        "dir": "raw_gtfs/consorcio",
+        "agency": "CTAG",
+        "usar_stop_code": False,
+        "prefijo_quitar": "3_"
+    },
+    "metro": {
+        "dir": "raw_gtfs/metro",
+        "agency": None,
+        "usar_stop_code": False,
+        "prefijo_quitar": None
+    }
+}
+
+OUT_BASE = "transporte/data"
+
 def fix_time(time_str):
+    """Normaliza tiempos > 24:00 (ej. 25:30 -> 01:30) y extrae HH:MM"""
     if not time_str: return ""
     try:
-        h, m, s = time_str.split(':')
+        h, m, _ = time_str.split(':')
         h = int(h)
-        if h >= 24:
-            h -= 24
+        if h >= 24: h -= 24
         return f"{h:02d}:{m}"
     except:
         return time_str[:5]
 
-def parse_gtfs():
-    networks = ['urbano', 'consorcio', 'metro']
-    base_raw = 'raw_gtfs'
-    base_out = 'transporte/data'
+def get_day_types(cal_row, srv_id):
+    """Deduce los días operativos (L-J, V, S, D) desde calendar.txt o el nombre del servicio"""
+    dias = []
+    if cal_row:
+        if cal_row.get('monday') == '1' or cal_row.get('tuesday') == '1': dias.append('L-J')
+        if cal_row.get('friday') == '1': dias.append('V')
+        if cal_row.get('saturday') == '1': dias.append('S')
+        if cal_row.get('sunday') == '1': dias.append('D')
+    
+    if not dias:
+        s = srv_id.lower()
+        if 'sab' in s or 'sáb' in s: dias.append('S')
+        elif 'dom' in s or 'fes' in s: dias.append('D')
+        elif 'vier' in s: dias.append('V')
+        elif 'lab' in s or 'lun' in s: dias.extend(['L-J', 'V'])
+        else: dias.extend(['L-J', 'V', 'S', 'D'])
+        
+    return dias
 
-    for net in networks:
-        raw_path = os.path.join(base_raw, net)
-        out_path = os.path.join(base_out, net)
-        detalles_path = os.path.join(out_path, 'detalles')
-
+def procesar_todo():
+    for net, conf in CONFIG.items():
+        raw_path = conf["dir"]
         if not os.path.exists(raw_path):
             continue
-        
+            
+        out_path = os.path.join(OUT_BASE, net)
+        detalles_path = os.path.join(out_path, 'detalles')
         os.makedirs(detalles_path, exist_ok=True)
-        print(f"Procesando red: {net.upper()}...")
+        print(f"\n🚀 Procesando red: {net.upper()}...")
 
         rutas = {}
         lineas_resumen = []
         with open(os.path.join(raw_path, 'routes.txt'), 'r', encoding='utf-8-sig') as f:
             for row in csv.DictReader(f):
-                if net == 'consorcio' and row.get('agency_id') != 'CTAG':
+                if conf["agency"] and row.get('agency_id') != conf["agency"]:
                     continue
 
                 rid = row['route_id']
@@ -53,29 +90,30 @@ def parse_gtfs():
         with open(os.path.join(out_path, 'lineas.json'), 'w', encoding='utf-8') as f:
             json.dump(lineas_resumen, f, ensure_ascii=False)
 
-        paradas = {}
-        paradas_resumen = []
+        paradas_crudas = {}
+        paradas_limpias = {}
+        
         with open(os.path.join(raw_path, 'stops.txt'), 'r', encoding='utf-8-sig') as f:
             for row in csv.DictReader(f):
-                sid = row['stop_id']
-                display_id = sid
+                raw_id = row['stop_id']
+                proc_id = raw_id
+                
+                if conf["usar_stop_code"] and row.get('stop_code'):
+                    proc_id = row['stop_code']
+                if conf["prefijo_quitar"] and proc_id.startswith(conf["prefijo_quitar"]):
+                    proc_id = proc_id[len(conf["prefijo_quitar"]):]
 
-                if net == 'urbano':
-                    display_id = row.get('stop_code', sid)
-                    if not display_id: display_id = sid
-                elif net == 'consorcio':
-                    if sid.startswith('3_'): display_id = sid[2:]
-
-                paradas[sid] = {
-                    'id': display_id,
+                datos_parada = {
+                    'id': proc_id,
                     'name': row.get('stop_name', ''),
                     'lat': float(row['stop_lat']),
                     'lon': float(row['stop_lon'])
                 }
-                paradas_resumen.append(paradas[sid])
-        
+                paradas_crudas[raw_id] = datos_parada
+                paradas_limpias[proc_id] = datos_parada
+                
         with open(os.path.join(out_path, 'paradas.json'), 'w', encoding='utf-8') as f:
-            json.dump(paradas_resumen, f, ensure_ascii=False)
+            json.dump(list(paradas_limpias.values()), f, ensure_ascii=False)
 
         shapes = defaultdict(list)
         shape_file = os.path.join(raw_path, 'shapes.txt')
@@ -91,25 +129,19 @@ def parse_gtfs():
                 shapes[sid].sort(key=lambda x: x['seq'])
                 shapes[sid] = [[pt['lat'], pt['lon']] for pt in shapes[sid]]
 
-        # 4. CALENDARIO
         calendario = {}
         cal_file = os.path.join(raw_path, 'calendar.txt')
         if os.path.exists(cal_file):
             with open(cal_file, 'r', encoding='utf-8-sig') as f:
                 for row in csv.DictReader(f):
-                    calendario[row['service_id']] = {
-                        'L': row.get('monday', '0'),
-                        'V': row.get('friday', '0'),
-                        'S': row.get('saturday', '0'),
-                        'D': row.get('sunday', '0')
-                    }
+                    calendario[row['service_id']] = row
 
         trips = {}
         rutas_trips = defaultdict(list)
         with open(os.path.join(raw_path, 'trips.txt'), 'r', encoding='utf-8-sig') as f:
             for row in csv.DictReader(f):
                 rid = row['route_id']
-                if rid not in rutas: continue
+                if rid not in rutas: continue 
                 
                 tid = row['trip_id']
                 trips[tid] = {
@@ -117,25 +149,45 @@ def parse_gtfs():
                     'dir': row.get('direction_id', '0'),
                     'shape': row.get('shape_id', ''),
                     'service': row.get('service_id', ''),
+                    'dias': get_day_types(calendario.get(row.get('service_id')), row.get('service_id')),
                     'stops': []
                 }
                 rutas_trips[rid].append(tid)
 
+        tiempos_offline = defaultdict(lambda: defaultdict(lambda: {"L-J": [], "V": [], "S": [], "D": []}))
+        
         with open(os.path.join(raw_path, 'stop_times.txt'), 'r', encoding='utf-8-sig') as f:
             for row in csv.DictReader(f):
                 tid = row['trip_id']
                 if tid in trips:
+                    raw_stop_id = row['stop_id']
+                    hora = fix_time(row['departure_time'])
+                    
                     trips[tid]['stops'].append({
-                        'stop_id': row['stop_id'],
+                        'raw_id': raw_stop_id,
                         'seq': int(row['stop_sequence']),
-                        'time': row['departure_time']
+                        'time': hora
                     })
+
+                    if raw_stop_id in paradas_crudas:
+                        proc_id = paradas_crudas[raw_stop_id]['id']
+                        rid = trips[tid]['route_id']
+                        for dia in trips[tid]['dias']:
+                            tiempos_offline[proc_id][rid][dia].append(hora)
+
+        for pid in tiempos_offline:
+            for rid in tiempos_offline[pid]:
+                for dia in ["L-J", "V", "S", "D"]:
+                    tiempos_offline[pid][rid][dia] = sorted(list(set(tiempos_offline[pid][rid][dia])))
+        
+        with open(os.path.join(out_path, 'tiempos_offline.json'), 'w', encoding='utf-8') as f:
+            json.dump(tiempos_offline, f, ensure_ascii=False)
 
         for rid in rutas:
             detalle = {
                 'info': rutas[rid],
-                'ida': {'shape': [], 'paradas': [], 'horarios_cabecera': defaultdict(list), 'horarios_paradas': {}},
-                'vuelta': {'shape': [], 'paradas': [], 'horarios_cabecera': defaultdict(list), 'horarios_paradas': {}}
+                'ida': {'shape': [], 'paradas': [], 'horarios_cabecera': {"L-J": [], "V": [], "S": [], "D": []}},
+                'vuelta': {'shape': [], 'paradas': [], 'horarios_cabecera': {"L-J": [], "V": [], "S": [], "D": []}}
             }
 
             viajes_ruta = [trips[t] for t in rutas_trips[rid]]
@@ -143,55 +195,34 @@ def parse_gtfs():
             for direc, dir_id in [('ida', '0'), ('vuelta', '1')]:
                 viajes_dir = [v for v in viajes_ruta if v['dir'] == dir_id]
                 if not viajes_dir: continue
-                
-                rep_trip = max(viajes_dir, key=lambda x: len(x['stops']))
-                
-                if rep_trip['shape'] and not detalle[direc]['shape']:
-                    detalle[direc]['shape'] = shapes.get(rep_trip['shape'], [])
-                
-                rep_stop_ids = [s['stop_id'] for s in rep_trip['stops']]
-                detalle[direc]['paradas'] = [paradas[sid] for sid in rep_stop_ids if sid in paradas]
 
-                for p in detalle[direc]['paradas']:
-                    detalle[direc]['horarios_paradas'][p['id']] = defaultdict(list)
+                viaje_maestro = max(viajes_dir, key=lambda x: len(x['stops']))
+                viaje_maestro['stops'].sort(key=lambda x: x['seq'])
+                
+                if viaje_maestro['shape']:
+                    detalle[direc]['shape'] = shapes.get(viaje_maestro['shape'], [])
+                
+                detalle[direc]['paradas'] = [paradas_crudas[s['raw_id']] for s in viaje_maestro['stops'] if s['raw_id'] in paradas_crudas]
 
                 for v in viajes_dir:
                     v['stops'].sort(key=lambda x: x['seq'])
                     if not v['stops']: continue
+                    
+                    hora_salida = v['stops'][0]['time']
+                    hora_llegada = v['stops'][-1]['time']
+                    if not hora_salida or not hora_llegada: continue
 
-                    srv = calendario.get(v['service'], {})
-                    srv_id = v['service'].lower()
+                    rango = f"{hora_salida} - {hora_llegada}"
+                    for dia in v['dias']:
+                        detalle[direc]['horarios_cabecera'][dia].append(rango)
 
-                    tipo_dia = "Lunes a Viernes"
-                    if srv.get('S') == '1' and srv.get('D') == '0': tipo_dia = "Sábados"
-                    elif srv.get('D') == '1': tipo_dia = "Domingos y Festivos"
-                    elif srv.get('L') == '1' and srv.get('V') == '0': tipo_dia = "Lunes a Jueves"
-                    elif srv.get('V') == '1' and srv.get('L') == '0': tipo_dia = "Viernes"
-                    else:
-                        if 'sab' in srv_id or 'sáb' in srv_id: tipo_dia = "Sábados"
-                        elif 'dom' in srv_id or 'fes' in srv_id: tipo_dia = "Domingos y Festivos"
-                        elif 'vier' in srv_id: tipo_dia = "Viernes"
-
-                    salida = fix_time(v['stops'][0]['time'])
-                    llegada = fix_time(v['stops'][-1]['time'])
-                    detalle[direc]['horarios_cabecera'][tipo_dia].append(f"{salida} - {llegada}")
-
-                    for s in v['stops']:
-                        if s['stop_id'] in paradas:
-                            api_id = paradas[s['stop_id']]['id']
-                            if api_id in detalle[direc]['horarios_paradas']:
-                                t_stop = fix_time(s['time'])
-                                detalle[direc]['horarios_paradas'][api_id][tipo_dia].append(t_stop)
-
-                for tipo in detalle[direc]['horarios_cabecera']:
-                    detalle[direc]['horarios_cabecera'][tipo] = sorted(list(set(detalle[direc]['horarios_cabecera'][tipo])))
-                
-                for api_id in detalle[direc]['horarios_paradas']:
-                    for tipo in detalle[direc]['horarios_paradas'][api_id]:
-                        detalle[direc]['horarios_paradas'][api_id][tipo] = sorted(list(set(detalle[direc]['horarios_paradas'][api_id][tipo])))
+                for dia in ["L-J", "V", "S", "D"]:
+                    detalle[direc]['horarios_cabecera'][dia] = sorted(list(set(detalle[direc]['horarios_cabecera'][dia])))
 
             with open(os.path.join(detalles_path, f"{rid}.json"), 'w', encoding='utf-8') as f:
                 json.dump(detalle, f, ensure_ascii=False)
+                
+        print(f"✅ Completado {net.upper()}: {len(rutas)} líneas y {len(paradas_limpias)} paradas extraídas.")
 
 if __name__ == "__main__":
-    parse_gtfs()
+    procesar_todo()
