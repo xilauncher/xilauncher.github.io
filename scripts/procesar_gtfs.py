@@ -27,7 +27,6 @@ CONFIG = {
 OUT_BASE = "transporte/data"
 
 def fix_time(time_str):
-    """Normaliza tiempos > 24:00 (ej. 25:30 -> 01:30) y extrae HH:MM"""
     if not time_str: return ""
     try:
         h, m, _ = time_str.split(':')
@@ -38,7 +37,6 @@ def fix_time(time_str):
         return time_str[:5]
 
 def get_day_types(cal_row, srv_id):
-    """Deduce los días operativos (L-J, V, S, D) desde calendar.txt o el nombre del servicio"""
     dias = []
     if cal_row:
         if cal_row.get('monday') == '1' or cal_row.get('tuesday') == '1': dias.append('L-J')
@@ -75,13 +73,19 @@ def procesar_todo():
                     continue
 
                 rid = row['route_id']
+                short = row.get('route_short_name', '').strip()
+                
+                if net == 'consorcio' and short.startswith('0'):
+                    short = short.lstrip('0')
+                    if not short: short = '0'
+
                 color = row.get('route_color', '0284c7').strip()
                 if not color or color == '': color = '0284c7'
                 if not color.startswith('#'): color = '#' + color
                 
                 rutas[rid] = {
                     'id': rid,
-                    'short_name': row.get('route_short_name', ''),
+                    'short_name': short,
                     'long_name': row.get('route_long_name', ''),
                     'color': color
                 }
@@ -155,6 +159,7 @@ def procesar_todo():
                 rutas_trips[rid].append(tid)
 
         tiempos_offline = defaultdict(lambda: defaultdict(lambda: {"L-J": [], "V": [], "S": [], "D": []}))
+        parada_a_rutas = defaultdict(set)
         
         with open(os.path.join(raw_path, 'stop_times.txt'), 'r', encoding='utf-8-sig') as f:
             for row in csv.DictReader(f):
@@ -162,6 +167,7 @@ def procesar_todo():
                 if tid in trips:
                     raw_stop_id = row['stop_id']
                     hora = fix_time(row['departure_time'])
+                    rid = trips[tid]['route_id']
                     
                     trips[tid]['stops'].append({
                         'raw_id': raw_stop_id,
@@ -171,7 +177,8 @@ def procesar_todo():
 
                     if raw_stop_id in paradas_crudas:
                         proc_id = paradas_crudas[raw_stop_id]['id']
-                        rid = trips[tid]['route_id']
+                        parada_a_rutas[proc_id].add(rid)
+                        
                         for dia in trips[tid]['dias']:
                             tiempos_offline[proc_id][rid][dia].append(hora)
 
@@ -195,14 +202,33 @@ def procesar_todo():
             for direc, dir_id in [('ida', '0'), ('vuelta', '1')]:
                 viajes_dir = [v for v in viajes_ruta if v['dir'] == dir_id]
                 if not viajes_dir: continue
-
+                
                 viaje_maestro = max(viajes_dir, key=lambda x: len(x['stops']))
                 viaje_maestro['stops'].sort(key=lambda x: x['seq'])
                 
                 if viaje_maestro['shape']:
                     detalle[direc]['shape'] = shapes.get(viaje_maestro['shape'], [])
-                
-                detalle[direc]['paradas'] = [paradas_crudas[s['raw_id']] for s in viaje_maestro['stops'] if s['raw_id'] in paradas_crudas]
+
+                for s in viaje_maestro['stops']:
+                    if s['raw_id'] in paradas_crudas:
+                        p_base = paradas_crudas[s['raw_id']]
+                        proc_id = p_base['id']
+
+                        if not detalle[direc]['paradas'] or detalle[direc]['paradas'][-1]['id'] != proc_id:
+                            p_copy = p_base.copy()
+
+                            trans = []
+                            for t_rid in parada_a_rutas[proc_id]:
+                                if t_rid != rid and t_rid in rutas:
+                                    trans.append({
+                                        'short_name': rutas[t_rid]['short_name'],
+                                        'color': rutas[t_rid]['color']
+                                    })
+
+                            trans.sort(key=lambda x: x['short_name'])
+                            p_copy['transbordos'] = trans
+                            
+                            detalle[direc]['paradas'].append(p_copy)
 
                 for v in viajes_dir:
                     v['stops'].sort(key=lambda x: x['seq'])

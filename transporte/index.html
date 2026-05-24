@@ -14,8 +14,6 @@
     <link rel="stylesheet" href="../css/MarkerCluster.Default.css" />
     <script src="../js/leaflet.markercluster.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
     <link href="../css/remixicon.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="../logo.png" />
     <link rel="apple-touch-icon" href="../logo.png" />
@@ -39,9 +37,9 @@
         <div class="spinner-ring"></div>
         <i class="ri-bus-fill spinner-icon"></i>
       </div>
-      <h2 class="loading-title" id="loadingTitle">Cargando Transporte...</h2>
+      <h2 class="loading-title" id="loadingTitle">Cargando...</h2>
       <p class="loading-subtitle" id="loadingSub">
-        Inicializando motor de rutas.
+        Inicializando base de datos.
       </p>
     </div>
 
@@ -95,24 +93,14 @@
             <input
               type="text"
               id="searchLineas"
+              oninput="filterLineas()"
               placeholder="Buscar línea o destino..."
               class="search-field"
               autocomplete="off"
             />
           </div>
         </div>
-        <div id="lineasList" class="list-container">
-          <div
-            style="
-              text-align: center;
-              color: var(--text-muted);
-              padding: 40px;
-              font-size: 12px;
-            "
-          >
-            Motor GTFS preparándose... (Fase 2)
-          </div>
-        </div>
+        <div id="lineasList" class="list-container"></div>
       </section>
 
       <section id="view-paradas" class="spa-view hidden">
@@ -154,7 +142,18 @@
 
       <section id="view-tarifas" class="spa-view hidden">
         <h2 class="section-title">Tarifas y Bonos</h2>
-        <div id="tarifasList" class="list-container"></div>
+        <div id="tarifasList" class="list-container">
+          <div
+            style="
+              text-align: center;
+              color: var(--text-muted);
+              padding: 40px;
+              font-size: 12px;
+            "
+          >
+            Información tarifaria en construcción.
+          </div>
+        </div>
       </section>
     </main>
 
@@ -185,7 +184,62 @@
       </button>
     </nav>
 
-    <div id="lineDetailModal" class="full-modal hidden"></div>
+    <div id="lineDetailModal" class="full-modal hidden">
+      <div class="lm-header" id="lmHeader">
+        <button class="lm-back-btn" onclick="closeLineModal()">
+          <i class="ri-arrow-down-s-line"></i>
+        </button>
+        <div class="lm-title-box">
+          <span class="lm-badge" id="lmBadge">--</span>
+          <h3 class="lm-name" id="lmName">Nombre de la línea</h3>
+        </div>
+      </div>
+
+      <div class="lm-direction-bar">
+        <button
+          class="lm-dir-btn active"
+          id="lmDirIda"
+          onclick="switchDirection('ida')"
+        >
+          Dirección Ida
+        </button>
+        <button
+          class="lm-dir-btn"
+          id="lmDirVuelta"
+          onclick="switchDirection('vuelta')"
+        >
+          Dirección Vuelta
+        </button>
+      </div>
+
+      <div class="lm-content">
+        <div class="lm-map-container">
+          <div id="routeMap"></div>
+        </div>
+
+        <div class="lm-tabs">
+          <button
+            class="lm-tab active"
+            id="lmTabParadas"
+            onclick="switchLineTab('paradas')"
+          >
+            Paradas
+          </button>
+          <button
+            class="lm-tab"
+            id="lmTabHorarios"
+            onclick="switchLineTab('horarios')"
+          >
+            Horarios (Teóricos)
+          </button>
+        </div>
+
+        <div class="lm-tab-content">
+          <div id="lmContentParadas" class="timeline-container"></div>
+          <div id="lmContentHorarios" class="schedules-container hidden"></div>
+        </div>
+      </div>
+    </div>
 
     <div id="toast" class="toast-box">
       <i id="toastIcon" class="ri-information-line"></i
