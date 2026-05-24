@@ -206,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initMainMap();
   initRouteMap();
   loadNetworkData("urbano");
+  renderRecentStops();
 });
 
 function switchNetwork(network) {
@@ -486,6 +487,7 @@ function renderMainMapStops() {
 }
 
 async function openStopModal(stopId, stopName) {
+  saveRecentStop(stopId, stopName);
   document.getElementById("smName").textContent = stopName;
   document.getElementById("smId").textContent = "Parada: " + stopId;
   const statusEl = document.getElementById("smStatus");
@@ -796,4 +798,45 @@ function toggleDarkMode() {
   document.getElementById("themeIcon").className = isDark
     ? "ri-sun-fill"
     : "ri-moon-fill";
+}
+
+function saveRecentStop(stopId, stopName) {
+  let history = JSON.parse(localStorage.getItem("recentStops") || "[]");
+
+  history = history.filter((s) => s.id !== stopId);
+  history.unshift({ id: stopId, name: stopName });
+
+  history = history.slice(0, 5);
+  localStorage.setItem("recentStops", JSON.stringify(history));
+
+  renderRecentStops();
+}
+
+function renderRecentStops() {
+  const history = JSON.parse(localStorage.getItem("recentStops") || "[]");
+  const container = document.getElementById("recentStopsContainer");
+
+  if (history.length === 0) {
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "block";
+  container.innerHTML = `
+    <div style="margin-bottom:12px;">
+      <small style="color:var(--text-muted); font-weight:700; font-size:10px; margin-left:8px;">ÚLTIMAS CONSULTADAS</small>
+      <div style="display:flex; gap:8px; margin-top:8px; overflow-x:auto;">
+        ${history
+          .map(
+            (s) => `
+          <button onclick="openStopModal('${s.id}', '${s.name.replace(/'/g, "\\'")}')" 
+                  style="background:var(--panel-bg); border:1px solid var(--border-color); padding:8px 12px; border-radius:12px; white-space:nowrap; font-size:11px; font-weight:700; color:var(--text-primary);">
+            <i class="ri-history-line" style="margin-right:4px;"></i>${s.name}
+          </button>
+        `,
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
 }
