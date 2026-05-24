@@ -1,0 +1,234 @@
+:root {
+  --bg-color: #f8fafc;
+  --panel-bg: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border-color: #f1f5f9;
+  --border-accent: #e2e8f0;
+  --brand-500: #0284c7;
+  --brand-600: #0369a1;
+  --brand-700: #075985;
+  --brand-900: #0c4a6e;
+}
+
+html.dark {
+  --bg-color: #0f172a;
+  --panel-bg: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+  --border-color: #334155;
+  --border-accent: #334155;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.app-header {
+  background: linear-gradient(
+    135deg,
+    var(--brand-900) 0%,
+    var(--brand-700) 100%
+  );
+  color: #ffffff;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1010;
+  flex-shrink: 0;
+  position: relative;
+  height: 54px;
+}
+
+.back-btn {
+  position: absolute;
+  left: 16px;
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1015;
+}
+
+.brand-title {
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pwa-badge {
+  background-color: var(--brand-500);
+  font-size: 8px;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  font-weight: 800;
+}
+
+.header-actions {
+  position: absolute;
+  right: 16px;
+}
+
+.header-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.calculator-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group.hidden {
+  display: none;
+}
+
+.input-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-accent);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--brand-500);
+}
+
+.action-area {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.calc-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  background: var(--brand-500);
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(2, 132, 195, 0.3);
+}
+
+.calc-btn:active {
+  transform: scale(0.98);
+}
+
+.result-card {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  padding: 24px;
+  border-radius: 16px;
+  color: white;
+  text-align: center;
+  animation: popIn 0.3s ease-out;
+}
+
+.result-card.hidden {
+  display: none;
+}
+
+.result-card h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.price-display {
+  font-size: 48px;
+  font-weight: 900;
+  margin: 10px 0;
+}
+
+.result-details {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+@keyframes popIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

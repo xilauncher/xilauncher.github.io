@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Emergencias | XiLauncher</title>
+    <link href="../css/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <meta name="theme-color" content="#0284c7" />
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="apple-touch-icon" href="../logo.png" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="../index.html" class="back-btn"
+        ><i class="ri-arrow-left-s-line"></i
+      ></a>
+      <div class="brand-title">
+        <i class="ri-hospital-fill" style="margin-right: 4px"></i> Emergencias
+        <span class="pwa-badge">Xi</span>
+      </div>
+      <div class="header-actions">
+        <button
+          onclick="toggleDarkMode()"
+          class="header-btn"
+          title="Cambiar Tema"
+        >
+          <i id="themeIcon" class="ri-moon-fill"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="quick-call-section">
+        <h2 class="section-title">Llamada Inmediata (24/7)</h2>
+        <div class="call-grid">
+          <a href="tel:112" class="call-btn btn-red">
+            <i class="ri-alarm-warning-fill"></i>
+            <span>Emergencias 112</span>
+          </a>
+          <a href="tel:091" class="call-btn btn-blue">
+            <i class="ri-police-car-fill"></i>
+            <span>Policía Nacional</span>
+          </a>
+          <a href="tel:062" class="call-btn btn-green">
+            <i class="ri-shield-star-fill"></i>
+            <span>Guardia Civil</span>
+          </a>
+          <a href="tel:080" class="call-btn btn-orange">
+            <i class="ri-fire-fill"></i>
+            <span>Bomberos</span>
+          </a>
+          <a href="tel:016" class="call-btn btn-purple">
+            <i class="ri-women-line"></i>
+            <span>Violencia de Género</span>
+          </a>
+          <a href="tel:024" class="call-btn btn-teal">
+            <i class="ri-mental-health-fill"></i>
+            <span>Atención Suicidio</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="nearby-section">
+        <h2 class="section-title">Encontrar Cerca de Mí (GPS)</h2>
+        <p class="section-desc">
+          Localiza el servicio más cercano a tu ubicación actual (Radio de 5km).
+        </p>
+
+        <div class="search-actions">
+          <button
+            id="btn-hospital"
+            class="search-btn btn-hospital"
+            data-type="hospital"
+          >
+            <i class="ri-hospital-fill"></i> Buscar Hospitales / Centros
+          </button>
+          <button
+            id="btn-farmacia"
+            class="search-btn btn-pharmacy"
+            data-type="pharmacy"
+          >
+            <i class="ri-capsule-fill"></i> Buscar Farmacias
+          </button>
+          <button
+            id="btn-policia"
+            class="search-btn btn-police"
+            data-type="police"
+          >
+            <i class="ri-police-badge-fill"></i> Buscar Comisarías
+          </button>
+        </div>
+
+        <div id="results-container" class="results-container"></div>
+      </section>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

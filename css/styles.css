@@ -384,3 +384,18 @@ body {
 .save-btn:active {
   transform: scale(0.95);
 }
+
+.app-card[draggable="true"] {
+  cursor: grab;
+}
+
+.app-card[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.app-card.dragging {
+  opacity: 0.4;
+  transform: scale(0.95);
+  box-shadow: none;
+  border: 2px dashed var(--brand-500, #38bdf8);
+}

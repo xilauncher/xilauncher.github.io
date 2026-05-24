@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   initClock();
   initNameModal();
+  initDragAndDrop();
 });
 
 function initTheme() {
@@ -51,7 +52,13 @@ function updateGreetingAndClock() {
 
 function initClock() {
   updateGreetingAndClock();
-  clockInterval = setInterval(updateGreetingAndClock, 1000 * 60);
+  const now = new Date();
+  const delay = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
+
+  setTimeout(() => {
+    updateGreetingAndClock();
+    clockInterval = setInterval(updateGreetingAndClock, 60000);
+  }, delay);
 }
 
 function initNameModal() {
@@ -93,6 +100,76 @@ if ("serviceWorker" in navigator) {
       .then((reg) => console.log("XiLauncher SW registrado:", reg.scope))
       .catch((err) => console.error("Error registrando SW del Hub:", err));
   });
+}
+
+function initDragAndDrop() {
+  const grid = document.getElementById("sortableGrid");
+  if (!grid) return;
+  const cards = Array.from(grid.querySelectorAll(".app-card"));
+
+  const savedOrder = JSON.parse(localStorage.getItem("xilauncher_app_order"));
+  if (savedOrder) {
+    savedOrder.forEach((id) => {
+      const card = grid.querySelector(`[data-id="${id}"]`);
+      if (card) grid.appendChild(card);
+    });
+  }
+
+  cards.forEach((card) => {
+    card.addEventListener("dragstart", (e) => {
+      card.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", card.dataset.id);
+    });
+
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+      saveOrder();
+    });
+  });
+
+  grid.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    const draggingCard = document.querySelector(".dragging");
+    if (!draggingCard) return;
+
+    const afterElement = getDragAfterElement(grid, e.clientX, e.clientY);
+
+    if (afterElement == null) {
+      grid.appendChild(draggingCard);
+    } else {
+      grid.insertBefore(draggingCard, afterElement);
+    }
+  });
+
+  function getDragAfterElement(container, x, y) {
+    const draggableElements = [
+      ...container.querySelectorAll(".app-card:not(.dragging)"),
+    ];
+
+    return draggableElements.reduce(
+      (closest, child) => {
+        const box = child.getBoundingClientRect();
+        const boxCenterX = box.left + box.width / 2;
+        const boxCenterY = box.top + box.height / 2;
+
+        const offset = Math.hypot(x - boxCenterX, y - boxCenterY);
+
+        if (offset < closest.offset && y < box.bottom + 20) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      },
+      { offset: Number.POSITIVE_INFINITY },
+    ).element;
+  }
+
+  function saveOrder() {
+    const currentCards = Array.from(grid.querySelectorAll(".app-card"));
+    const orderArray = currentCards.map((card) => card.dataset.id);
+    localStorage.setItem("xilauncher_app_order", JSON.stringify(orderArray));
+  }
 }
 
 let deferredPrompt;

@@ -1,0 +1,17 @@
+{
+  "name": "XiLauncher | Emergencias",
+  "short_name": "Emergencias",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c4a6e",
+  "theme_color": "#0284c7",
+  "description": "Hospitales, Centros de Salud, Bomberos, Policia, Guardia Civil.",
+  "icons": [
+    {
+      "src": "../logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

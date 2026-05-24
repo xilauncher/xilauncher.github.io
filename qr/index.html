@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Lector QR | XiLauncher</title>
+    <link href="../css/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <meta name="theme-color" content="#0284c7" />
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="apple-touch-icon" href="../logo.png" />
+    <link rel="manifest" href="manifest.json" />
+
+    <script src="../js/html5-qrcode.min.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="../index.html" class="back-btn"
+        ><i class="ri-arrow-left-s-line"></i
+      ></a>
+      <div class="brand-title">
+        <i class="ri-qr-code-line" style="margin-right: 4px"></i> Lector QR
+        <span class="pwa-badge">Xi</span>
+      </div>
+      <div class="header-actions">
+        <button
+          onclick="toggleDarkMode()"
+          class="header-btn"
+          title="Cambiar Tema"
+        >
+          <i id="themeIcon" class="ri-moon-fill"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="container">
+      <div id="scanner-container" class="scanner-card">
+        <p class="instruction-text">
+          Apunta con la cámara al código QR para escanearlo automáticamente.
+        </p>
+        <div class="reader-wrapper">
+          <div id="reader"></div>
+          <div class="scan-line"></div>
+        </div>
+      </div>
+
+      <div id="result-container" class="result-card hidden">
+        <div class="result-icon">
+          <i class="ri-checkbox-circle-fill"></i>
+        </div>
+        <h3>Código detectado</h3>
+
+        <div class="result-content">
+          <p id="qr-text">Aquí aparecerá el contenido...</p>
+        </div>
+
+        <div class="result-actions">
+          <a
+            id="btn-open-link"
+            href="#"
+            target="_blank"
+            class="action-btn btn-primary hidden"
+          >
+            <i class="ri-external-link-line"></i> Abrir Enlace
+          </a>
+          <button id="btn-copy" class="action-btn btn-secondary">
+            <i class="ri-file-copy-line"></i> Copiar Texto
+          </button>
+        </div>
+
+        <button id="btn-scan-again" class="scan-again-btn">
+          <i class="ri-qr-scan-2-line"></i> Escanear otro código
+        </button>
+      </div>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

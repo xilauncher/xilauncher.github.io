@@ -16,6 +16,7 @@
     <link rel="apple-touch-icon" href="./logo.png" />
     <meta name="theme-color" content="#0f172a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script src="js/DragDropTouch.js"></script>
   </head>
   <body>
     <header class="launcher-header">
@@ -59,8 +60,13 @@
     <main class="launcher-main">
       <h2 class="section-title">Mis Aplicaciones</h2>
 
-      <div class="app-grid">
-        <a href="./gasolina/index.html" class="app-card">
+      <div class="app-grid" id="sortableGrid">
+        <a
+          href="./gasolina/index.html"
+          class="app-card"
+          data-id="gasolina"
+          draggable="true"
+        >
           <div
             class="app-icon"
             style="
@@ -75,90 +81,165 @@
           </div>
         </a>
 
-        <div class="app-grid">
-          <a href="./tiempo/index.html" class="app-card">
-            <div
-              class="app-icon"
-              style="
-                background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-              "
-            >
-              <i class="ri-cloud-windy-fill"></i>
-            </div>
-            <div class="app-details">
-              <h3>Tiempo</h3>
-              <p>Clima, viento y calidad del aire.</p>
-            </div>
-          </a>
-        </div>
+        <a
+          href="./tiempo/index.html"
+          class="app-card"
+          data-id="tiempo"
+          draggable="true"
+        >
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            "
+          >
+            <i class="ri-cloud-windy-fill"></i>
+          </div>
+          <div class="app-details">
+            <h3>Tiempo</h3>
+            <p>Clima, viento y calidad del aire.</p>
+          </div>
+        </a>
 
-        <div class="app-grid">
-          <a href="./radio/index.html" class="app-card">
-            <div
-              class="app-icon"
-              style="
-                background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
-              "
-            >
-              <i class="ri-radio-2-fill"></i>
-            </div>
-            <div class="app-details">
-              <h3>Radio</h3>
-              <p>Emisoras en directo.</p>
-            </div>
-          </a>
-        </div>
+        <a
+          href="./radio/index.html"
+          class="app-card"
+          data-id="radio"
+          draggable="true"
+        >
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+            "
+          >
+            <i class="ri-radio-2-fill"></i>
+          </div>
+          <div class="app-details">
+            <h3>Radio</h3>
+            <p>Emisoras en directo.</p>
+          </div>
+        </a>
 
-        <div class="app-grid">
-          <a href="./parkings/index.html" class="app-card">
-            <div
-              class="app-icon"
-              style="
-                background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
-              "
-            >
-              <i class="ri-parking-box-fill"></i>
-            </div>
-            <div class="app-details">
-              <h3>Parkings</h3>
-              <p>Plazas libres en tiempo real en Granada</p>
-            </div>
-          </a>
-        </div>
+        <a
+          href="./parkings/index.html"
+          class="app-card"
+          data-id="parkings"
+          draggable="true"
+        >
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+            "
+          >
+            <i class="ri-parking-box-fill"></i>
+          </div>
+          <div class="app-details">
+            <h3>Parkings</h3>
+            <p>Plazas libres en tiempo real.</p>
+          </div>
+        </a>
 
-        <div class="app-grid">
-          <a href="./cortes/index.html" class="app-card">
-            <div
-              class="app-icon"
-              style="
-                background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-              "
-            >
-              <i class="ri-barricade-fill"></i>
-            </div>
-            <div class="app-details">
-              <h3>Cortes y Eventos</h3>
-              <p>Cortes de Tráfico en tiempo real en Granada</p>
-            </div>
-          </a>
-        </div>
+        <a
+          href="./cortes/index.html"
+          class="app-card"
+          data-id="cortes"
+          draggable="true"
+        >
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            "
+          >
+            <i class="ri-barricade-fill"></i>
+          </div>
+          <div class="app-details">
+            <h3>Cortes y Eventos</h3>
+            <p>Cortes de tráfico en tiempo real.</p>
+          </div>
+        </a>
 
-        <div class="app-grid">
-          <a href="./transporte/index.html" class="app-card">
-            <div
-              class="app-icon"
-              style="
-                background: linear-gradient(135deg, #3ff44e 0%, #0b9b17 100%);
-              "
-            >
-              <i class="ri-bus-wifi-fill"></i>
-            </div>
-            <div class="app-details">
-              <h3>Transporte Público</h3>
-              <p>Transporte en tiempo real en Granada</p>
-            </div>
-          </a>
-        </div>
+        <a
+          href="./transporte/index.html"
+          class="app-card"
+          data-id="transporte"
+          draggable="true"
+        >
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #3ff44e 0%, #0b9b17 100%);
+            "
+          >
+            <i class="ri-bus-wifi-fill"></i>
+          </div>
+          <div class="app-details">
+            <h3>Transporte Público</h3>
+            <p>Transporte en tiempo real en Granada.</p>
+          </div>
+        </a>
+
+        <a
+          href="./emergencias/index.html"
+          class="app-card"
+          data-id="emergencias"
+          draggable="true"
+        >
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            "
+          >
+            <i class="ri-hospital-fill"></i>
+          </div>
+          <div class="app-details">
+            <h3>Servicios Esenciales</h3>
+            <p>Farmacias, Salud, Policía y Bomberos.</p>
+          </div>
+        </a>
+
+        <a
+          href="./calculadora/index.html"
+          class="app-card"
+          data-id="calculadora"
+          draggable="true"
+        >
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #b944ef 0%, #b91c85 100%);
+            "
+          >
+            <i class="ri-oil-fill"></i>
+          </div>
+          <div class="app-details">
+            <h3>Calculadora Combustible</h3>
+            <p>Calcula facilmente el consumo de tu vehículo</p>
+          </div>
+        </a>
+
+        <a
+          href="./qr/index.html"
+          class="app-card"
+          data-id="qr"
+          draggable="true"
+        >
+          <div
+            class="app-icon"
+            style="
+              background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            "
+          >
+            <i class="ri-qr-code-line"></i>
+          </div>
+          <div class="app-details">
+            <h3>Lector QR</h3>
+            <p>Escáner de cámara nativo.</p>
+          </div>
+        </a>
       </div>
     </main>
 

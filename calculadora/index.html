@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>XiLauncher | Calculadora</title>
+    <link href="../css/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <meta name="theme-color" content="#0284c7" />
+    <link rel="icon" type="image/png" href="../logo.png" />
+    <link rel="apple-touch-icon" href="../logo.png" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="../index.html" class="back-btn"
+        ><i class="ri-arrow-left-s-line"></i
+      ></a>
+      <div class="brand-title">
+        <i class="ri-gas-station-fill" style="margin-right: 4px"></i>
+        Calculadora
+        <span class="pwa-badge">Xi</span>
+      </div>
+      <div class="header-actions">
+        <button
+          onclick="toggleDarkMode()"
+          class="header-btn"
+          title="Cambiar Tema"
+        >
+          <i id="themeIcon" class="ri-moon-fill"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="calculator-card">
+        <div class="input-group">
+          <label><i class="ri-route-line"></i> Distancia (Kilómetros)</label>
+          <input
+            type="number"
+            id="distancia"
+            placeholder="Ej: 250"
+            inputmode="numeric"
+          />
+        </div>
+
+        <div class="input-group">
+          <label
+            ><i class="ri-gas-station-line"></i> Precio del Combustible
+            (€/L)</label
+          >
+          <input
+            type="number"
+            id="precio"
+            placeholder="Ej: 1.55"
+            step="0.01"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="input-group">
+          <label
+            ><i class="ri-car-line"></i> Tipo de Vehículo (Consumo medio)</label
+          >
+          <select id="consumo">
+            <option value="5">Utilitario pequeño (~5 L/100km)</option>
+            <option value="6.5" selected>
+              Coche medio / Berlina (~6.5 L/100km)
+            </option>
+            <option value="8">SUV / Todoterreno (~8 L/100km)</option>
+            <option value="9.5">Furgoneta (~9.5 L/100km)</option>
+            <option value="custom">Introducir consumo manual...</option>
+          </select>
+        </div>
+
+        <div class="input-group hidden" id="custom-consumo-group">
+          <label>Consumo personalizado (L/100km)</label>
+          <input
+            type="number"
+            id="consumo-custom"
+            placeholder="Ej: 7.2"
+            step="0.1"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="action-area">
+          <button id="btn-calcular" class="calc-btn">
+            <i class="ri-calculator-line"></i> Calcular Gasto
+          </button>
+        </div>
+      </div>
+
+      <div id="resultado-card" class="result-card hidden">
+        <h3>Coste Total Estimado</h3>
+        <div class="price-display"><span id="total-euros">0.00</span>€</div>
+        <div class="result-details">
+          <p>
+            <i class="ri-drop-line"></i> Litros necesarios:
+            <strong id="total-litros">0.0</strong> L
+          </p>
+          <p>
+            <i class="ri-arrow-left-right-line"></i> Ida y vuelta:
+            <strong id="total-doble">0.00</strong> €
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
