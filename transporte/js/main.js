@@ -225,6 +225,11 @@ function switchNetwork(network) {
   document.documentElement.style.setProperty("--brand-600", colorVar);
 
   loadNetworkData(network);
+  if (APP_STATE.map) {
+    setTimeout(() => {
+      APP_STATE.map.invalidateSize();
+    }, 300);
+  }
   renderTarifas();
 }
 
